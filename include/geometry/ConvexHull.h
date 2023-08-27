@@ -3,7 +3,7 @@
 
 #include <stack>
 #include <vector>
-#include <pair>
+#include <algorithm>
 
 using namespace std;
 
@@ -13,11 +13,11 @@ namespace Geometry {
  * Convex Hull
  */
 vector<double*> ConvexHull(vector<double*>& p) {
-	vector<double*> ans;
+	vector<double*> res;
 
 	int n = p.size();
 	if (n <= 3)
-		return ans = p;
+		return res = p;
 
 	// find min
 	double* minn = p[0];
@@ -46,29 +46,29 @@ vector<double*> ConvexHull(vector<double*>& p) {
 	});
 
 	// judge
-	ans.push_back(p[0]);
-	ans.push_back(p[1]);
+	res.push_back(p[0]);
+	res.push_back(p[1]);
 
 	for (int i = 2; i < n; i++) {
-		ans.push_back(p[i]);
+		res.push_back(p[i]);
 
-		int m = ans.size();
+		int m = res.size();
 		while (m > 2) {
 			// cross
-			int t = (ans[m - 1][0] - ans[m - 2][0]) 
-				  * (ans[m - 3][1] - ans[m - 2][1])
-				  - (ans[m - 3][0] - ans[m - 2][0]) 
-				  * (ans[m - 1][1] - ans[m - 2][1]);
+			int t = (res[m - 1][0] - res[m - 2][0]) 
+				  * (res[m - 3][1] - res[m - 2][1])
+				  - (res[m - 3][0] - res[m - 2][0]) 
+				  * (res[m - 1][1] - res[m - 2][1]);
 
 			if (t > 0) 
-				ans.erase(ans.begin() + m - 2);
+				res.erase(res.begin() + m - 2);
 			else
 				break;
-			m = ans.size();
+			m = res.size();
 		}
 	}
 
-	return ans;
+	return res;
 }
 
 }

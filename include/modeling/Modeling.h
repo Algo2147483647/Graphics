@@ -2,10 +2,10 @@
 #define MODELING_H
 
 #include <vector>
-#include "../../../Math/src/Matrix/Matrix.h"
+#include "Matrix.h"
 #include "GraphicsIO.h"
-#include "./Geometry/MarchingCubes.h"
-#include "./Geometry/Ear_Clipping.h"
+#include "MarchingCubes.h"
+#include "Ear_Clipping.h"
 
 #define PI 3.141592653589
 

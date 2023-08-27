@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <vector>
-#include"../Matrix/Matrix.h"
+#include"Matrix.h"
 
 using namespace Matrix;
 
@@ -34,19 +34,19 @@ namespace Geometry {
 *	[Referance]:
 		[1] http://paulbourke.net/papers/triangulate/
 *************************************************************************************************/
-Mat<>* Delaunay(Mat<> point[], int n, int& TrianglesNum) {
-	std::vector<Mat<>> triAns, triTemp, edgeBuffer;
-	std::sort(point, point + n, [](Mat<>& a, Mat<>& b) {				// 将点按坐标x从小到大排序
+Mat<float>* Delaunay(Mat<float> point[], int n, int& TrianglesNum) {
+	std::vector<Mat<float>> triAns, triTemp, edgeBuffer;
+	std::sort(point, point + n, [](Mat<float>& a, Mat<float>& b) {				// 将点按坐标x从小到大排序
 		return a[0] != b[0] ? a[0] < b[0] : a[1] < b[1];
 	});
 	//[2]
-	Mat<> maxPoint(point[0]), 
+	Mat<float> maxPoint(point[0]), 
 				minPoint(point[0]);
 	for (int i = 1; i < n; i++) {
 		maxPoint = (point[i][0] > maxPoint[0] || (point[i][0] == maxPoint[0] && point[i][1] > maxPoint[1])) ? point[i] : maxPoint;
 		minPoint = (point[i][0] < minPoint[0] || (point[i][0] == minPoint[0] && point[i][1] < minPoint[1])) ? point[i] : minPoint;
 	}
-	Mat<> supertriangle(2, 3), length;
+	Mat<float> supertriangle(2, 3), length;
 	sub(length, maxPoint, minPoint);
 	supertriangle(0, 0) = minPoint[0] - length[0] - 2;    supertriangle(1, 0) = minPoint[1] - 2;
 	supertriangle(0, 1) = maxPoint[0] + length[0] + 2;    supertriangle(1, 1) = minPoint[1] - 2;
@@ -58,7 +58,7 @@ Mat<>* Delaunay(Mat<> point[], int n, int& TrianglesNum) {
 		//[3.2]
 		for (int j = 0; j < triTemp.size(); j++) {
 			//[3.2.1] 
-			Mat<> center, triEdge[3], temp;
+			Mat<float> center, triEdge[3], temp;
 			for (int k = 0; k < 3; k++)
 				getCol(triTemp[j], k, triEdge[k]);
 			double R;
@@ -71,7 +71,7 @@ Mat<>* Delaunay(Mat<> point[], int n, int& TrianglesNum) {
 			}
 			//[3.2.4]
 			else if (distance < R) {
-				Mat<> edge(2, 2), p1, p2;
+				Mat<float> edge(2, 2), p1, p2;
 				for (int k = 0; k < 3; k++) {
 					getCol(triTemp[j], k, p1);
 					getCol(triTemp[j], k + 1) % 3, p2);
@@ -89,7 +89,7 @@ Mat<>* Delaunay(Mat<> point[], int n, int& TrianglesNum) {
 			}
 		}
 		//[3.3] 
-		std::sort(edgeBuffer.begin(), edgeBuffer.end(), [](Mat<> a, Mat<> b) {
+		std::sort(edgeBuffer.begin(), edgeBuffer.end(), [](Mat<float> a, Mat<float> b) {
 			if (a(0, 0) < b(0, 0) || (a(0, 0) == b(0, 0) && a(1, 0) < b(1, 0)))return true;
 			if (a(0, 1) < b(0, 1) || (a(0, 1) == b(0, 1) && a(1, 1) < b(1, 1)))return true;
 			return false;
@@ -103,7 +103,7 @@ Mat<>* Delaunay(Mat<> point[], int n, int& TrianglesNum) {
 		}
 		//[3.4] 
 		for (int j = 0; j < edgeBuffer.size(); j++) {
-			Mat<> t(2, 3), temp;
+			Mat<float> t(2, 3), temp;
 			t.setCol(0, edgeBuffer[j].getCol(0, temp)); 
 			t.setCol(1, edgeBuffer[j].getCol(1, temp)); 
 			t.setCol(2, point[i]);
@@ -113,7 +113,7 @@ Mat<>* Delaunay(Mat<> point[], int n, int& TrianglesNum) {
 	//[4]
 	for (int i = 0; i < triTemp.size(); i++) triAns.push_back(triTemp[i]);
 	for (int i = 0; i < triAns. size(); i++) {
-		Mat<> t;
+		Mat<float> t;
 		for (int j = 0; j < 3; j++) {
 			triAns[i].getCol(j, t);
 			if (t[0]< minPoint[0] || t[1] < minPoint[1] || t[0] > maxPoint[0] || t[1] > maxPoint[1]) {
@@ -123,7 +123,7 @@ Mat<>* Delaunay(Mat<> point[], int n, int& TrianglesNum) {
 	}
 	// [Output]
 	TrianglesNum = triAns.size();
-	Mat<>* Triangles = (Mat<>*)calloc(TrianglesNum, sizeof(Mat<>));
+	Mat<float>* Triangles = (Mat<float>*)calloc(TrianglesNum, sizeof(Mat<float>));
 	for (int i = 0; i < TrianglesNum; i++) Triangles[i] = triAns[i];
 	return Triangles;
 }

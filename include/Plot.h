@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_PLOT_H
 #define GRAPHICS_PLOT_H
 
-#include "../../../../Math/src/Matrix/Mat.h"
+#include "Mat.h"
 #include "RGB.h"
 
 namespace Graphics {
@@ -9,7 +9,7 @@ namespace Graphics {
 	/* 
 	 * 画等高线
 	 */
-	void contour(Mat<ARGB>& image, Mat<>& map, const int N) {
+	void contour(Mat<ARGB>& image, Mat<float>& map, const int N) {
 		int x_step[] = { 1, 0, 1 },
 			y_step[] = { 0, 1, 1 };
 		double 
@@ -44,7 +44,7 @@ namespace Graphics {
 		}
 	}
 
-	void contour(Mat<ARGB>& image, Mat<>& map) {
+	void contour(Mat<ARGB>& image, Mat<float>& map) {
 		double 
 			min   = map.min(),
 			delta = map.max() - min;
@@ -53,7 +53,7 @@ namespace Graphics {
 			image(map.i2x(i), map.i2y(i)) = colorlist((map[i] - min) / delta, 1);
 	}
 
-	void contour(Mat<ARGB>& image, Mat<>& mapX, Mat<>& mapY, Mat<>& mapZ) {
+	void contour(Mat<ARGB>& image, Mat<float>& mapX, Mat<float>& mapY, Mat<float>& mapZ) {
 		double
 			minX = mapX.min(), maxX = mapX.max(),
 			minY = mapY.min(), maxY = mapY.max(),

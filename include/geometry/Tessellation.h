@@ -1,16 +1,16 @@
 #include <vector>
-#include "../../../Math/Matrix/Matrix.h"
+#include "Matrix.h"
 
 
 // Regular hexagon Tessellation
-void HexagonTessellation(int numX, int numY, double gridLen, std::vector<Mat<>>& points, std::vector<Mat<>>& edges) {
+void HexagonTessellation(int numX, int numY, double gridLen, std::vector<Mat<float>>& points, std::vector<Mat<float>>& edges) {
     points.clear();
     edges. clear();
 
     double
         x0 = 0,
         y0 = 0;
-    Mat<> p(2), e(2, 2);
+    Mat<float> p(2), e(2, 2);
 
     for (int i = 0; i < numY; i++) {
         if (i != 0) {
@@ -51,9 +51,9 @@ void HexagonTessellation(int numX, int numY, double gridLen, std::vector<Mat<>>&
 
 // Random Rectangle Tessellation
 void RandomRectangleTessellation(
-	Mat<>& area, std::vector<Mat<>>& rects, int N, int sizeThreshold = 0, int randThreshold = 0
+	Mat<float>& area, std::vector<Mat<float>>& rects, int N, int sizeThreshold = 0, int randThreshold = 0
 ) {
-	Mat<> p(4), p1(4), p2(4);
+	Mat<float> p(4), p1(4), p2(4);
 
 	rects.clear();
 	rects.push_back(area);

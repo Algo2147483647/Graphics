@@ -23,52 +23,52 @@ struct Object { 		//物体
 	Material* material = NULL; 
 };
 
-inline Mat<>& FaceVector(Object& obj, Mat<>& intersect, Mat<>& ans) {
-	static Mat<> tmp1(3), tmp2(3);
+inline Mat<float>& FaceVector(Object& obj, Mat<float>& intersect, Mat<float>& res) {
+	static Mat<float> tmp1(3), tmp2(3);
 
 	switch (obj.type) {
-	case PLANE:		ans = *(Mat<>*)obj.v[0]; break;
-	case CIRCLE:	ans = *(Mat<>*)obj.v[1]; break;
+	case PLANE:		res  = *(Mat<float>*)obj.v[0]; break;
+	case CIRCLE:	res  = *(Mat<float>*)obj.v[1]; break;
 	case TRIANGLE:
-		normalize(cross_(ans,
-			sub(tmp1, *(Mat<>*)obj.v[1], *(Mat<>*)obj.v[0]),
-			sub(tmp2, *(Mat<>*)obj.v[2], *(Mat<>*)obj.v[0])
+		normalize(cross_(res ,
+			sub(tmp1, *(Mat<float>*)obj.v[1], *(Mat<float>*)obj.v[0]),
+			sub(tmp2, *(Mat<float>*)obj.v[2], *(Mat<float>*)obj.v[0])
 		)); break;
-	case PLANESHAPE:ans = *(Mat<>*)obj.v[1]; break;
-	case SPHERE:	normalize(sub(ans, intersect, *(Mat<>*)obj.v[0])); break;
+	case PLANESHAPE:res  = *(Mat<float>*)obj.v[1]; break;
+	case SPHERE:	normalize(sub(res , intersect, *(Mat<float>*)obj.v[0])); break;
 	case ELLIPSOID:
-		ans = {
-			intersect(0) * pow((*(Mat<>*)obj.v[1])(0, 0), 2),
-			intersect(1) * pow((*(Mat<>*)obj.v[1])(1, 1), 2),
-			intersect(2) * pow((*(Mat<>*)obj.v[1])(2, 2), 2)
+		res  = {
+			intersect(0) * pow((*(Mat<float>*)obj.v[1])(0, 0), 2),
+			intersect(1) * pow((*(Mat<float>*)obj.v[1])(1, 1), 2),
+			intersect(2) * pow((*(Mat<float>*)obj.v[1])(2, 2), 2)
 		};
-		normalize(ans);
+		normalize(res );
 		break;
 	case CUBOID:
-		if (fabs(intersect[0] - (*(Mat<>*)obj.v[0])[0]) < EPS 
-		||  fabs(intersect[0] - (*(Mat<>*)obj.v[1])[0]) < EPS) 
-			ans = { 1, 0, 0 };
-		else if (fabs(intersect[1] - (*(Mat<>*)obj.v[0])[1]) < EPS 
-			 ||  fabs(intersect[1] - (*(Mat<>*)obj.v[1])[1]) < EPS) 
-			ans = { 0, 1, 0 };
-		else if (fabs(intersect[2] - (*(Mat<>*)obj.v[0])[2]) < EPS 
-			 ||  fabs(intersect[2] - (*(Mat<>*)obj.v[1])[2]) < EPS) 
-			ans = { 0, 0, 1 };
+		if (fabs(intersect[0] - (*(Mat<float>*)obj.v[0])[0]) < EPS 
+		||  fabs(intersect[0] - (*(Mat<float>*)obj.v[1])[0]) < EPS) 
+			res  = { 1, 0, 0 };
+		else if (fabs(intersect[1] - (*(Mat<float>*)obj.v[0])[1]) < EPS 
+			 ||  fabs(intersect[1] - (*(Mat<float>*)obj.v[1])[1]) < EPS) 
+			res  = { 0, 1, 0 };
+		else if (fabs(intersect[2] - (*(Mat<float>*)obj.v[0])[2]) < EPS 
+			 ||  fabs(intersect[2] - (*(Mat<float>*)obj.v[1])[2]) < EPS) 
+			res  = { 0, 0, 1 };
 		break;
 	case RING:
 		double 
 			a = ((*(double*)obj.v[2]) * (*(double*)obj.v[2]) - (*(double*)obj.v[1]) * (*(double*)obj.v[1]))
 			  + intersect[0] * intersect[0] + intersect[1] * intersect[1] + intersect[2] * intersect[2],
 			b = 4 * (*(double*)obj.v[1]) * (*(double*)obj.v[1]);
-		ans = {
+		res  = {
 			4 * intersect[0] * a - 2 * b * intersect[0],
 			4 * intersect[1] * a - 2 * b * intersect[1],
 			4 * intersect[2] * a,
 		};
-		normalize(ans);
+		normalize(res );
 		break;
 	}
-	return ans;
+	return res ;
 }
 
 struct ObjectNode {
@@ -87,20 +87,20 @@ public:
 	void build() { build(ObjectSet); };
 	void build(ObjectNode* obSet, int l, int r, ObjectNode*& node);
 
-	double seekIntersection(Mat<>& RaySt, Mat<>& Ray, Object*& ob);
-	double seekIntersection(Mat<>& RaySt, Mat<>& Ray, ObjectNode* node, Object*& ob);
-	double seekIntersection(Mat<>& RaySt, Mat<>& Ray, Object& ob);
+	double seekIntersection(Mat<float>& RaySt, Mat<float>& Ray, Object*& ob);
+	double seekIntersection(Mat<float>& RaySt, Mat<float>& Ray, ObjectNode* node, Object*& ob);
+	double seekIntersection(Mat<float>& RaySt, Mat<float>& Ray, Object& ob);
 
 	//add
-	void addPlane		(Mat<>& n, Mat<>& p0, Material* material = NULL);	//+平面
-	void addCircle		(Mat<>& center, double R, Mat<>& n, Material* material = NULL);	//+圆
-	void addTriangle	(Mat<>& p1,Mat<>& p2, Mat<>& p3, Material* material = NULL);	//+三角形
-	void addPlaneShape	(Mat<>& n, Mat<>& p0, bool(*f)(double, double), Material* material = NULL);	//+平面图形
-	void addSphere		(Mat<>& center, double r, Material* material = NULL, bool(*f)(double, double) = NULL);	//+球
-	void addEllipsoid	(Mat<>& center, Mat<>& PInv, Material* material = NULL, bool(*f)(double, double) = NULL);
-	void addCuboid		(Mat<>& pmin, Mat<>& pmax, Material* material = NULL);	//+长方体
-	void addStl			(const char* file, Mat<>& center, double size, Material** material);
-	void addRing		(Mat<>& center, double R, double r, Material* material = NULL);
+	void addPlane		(Mat<float>& n, Mat<float>& p0, Material* material = NULL);	//+平面
+	void addCircle		(Mat<float>& center, double R, Mat<float>& n, Material* material = NULL);	//+圆
+	void addTriangle	(Mat<float>& p1,Mat<float>& p2, Mat<float>& p3, Material* material = NULL);	//+三角形
+	void addPlaneShape	(Mat<float>& n, Mat<float>& p0, bool(*f)(double, double), Material* material = NULL);	//+平面图形
+	void addSphere		(Mat<float>& center, double r, Material* material = NULL, bool(*f)(double, double) = NULL);	//+球
+	void addEllipsoid	(Mat<float>& center, Mat<float>& PInv, Material* material = NULL, bool(*f)(double, double) = NULL);
+	void addCuboid		(Mat<float>& pmin, Mat<float>& pmax, Material* material = NULL);	//+长方体
+	void addStl			(const char* file, Mat<float>& center, double size, Material** material);
+	void addRing		(Mat<float>& center, double R, double r, Material* material = NULL);
 
 	void addPlane		(std::initializer_list<double> n, std::initializer_list<double> p0, Material* material);
 	void addCircle		(std::initializer_list<double> center, double R, std::initializer_list<double> n, Material* material);

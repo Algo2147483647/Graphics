@@ -1,7 +1,7 @@
 #ifndef GEOMETERICAL_OPTICS_H
 #define GEOMETERICAL_OPTICS_H
 
-#include "../Matrix/Matrix.h"
+#include "Matrix.h"
 using namespace Matrix;
 
 #define PI 3.141592653589
@@ -10,14 +10,14 @@ using namespace Matrix;
 namespace GeometricalOptics {
 
 	/*---- 反射 ----*/
-	inline Mat<>& reflect(Mat<>& RayI, Mat<>& faceVec, Mat<>& RayO) {
+	inline Mat<float>& reflect(Mat<float>& RayI, Mat<float>& faceVec, Mat<float>& RayO) {
 		mul(RayO, -2 * dot(faceVec, RayI), faceVec);
 		add(RayO, RayO, RayI);
 		return normalize(RayO);
 	}
 
 	/*---- 折射 ----*/
-	inline Mat<>& refract(Mat<>& RayI, Mat<>& faceVec, Mat<>& RayO, double rateI, double rateO) {
+	inline Mat<float>& refract(Mat<float>& RayI, Mat<float>& faceVec, Mat<float>& RayO, double rateI, double rateO) {
 		double k = rateI / rateO,
 			CosI = dot(faceVec, RayI),
 			CosO = 1 - pow(k, 2) * (1 - pow(CosI, 2));
@@ -31,9 +31,9 @@ namespace GeometricalOptics {
 	}
 
 	/*---- 漫反射 ----*/
-	inline Mat<>& diffuseReflect(Mat<>& RayI, Mat<>& faceVec, Mat<>& RayO) {
+	inline Mat<float>& diffuseReflect(Mat<float>& RayI, Mat<float>& faceVec, Mat<float>& RayO) {
 		double r1 = 2 * PI * RAND_DBL, r2 = RAND_DBL;
-		static Mat<> t(3), u, v;
+		static Mat<float> t(3), u, v;
 
 		mul(faceVec, dot(faceVec, RayI) > 0 ? -1 : 1, faceVec);
 		t[0] = fabs(faceVec[0]) > 0.1 ? 0 : 1;
@@ -53,8 +53,8 @@ namespace GeometricalOptics {
 		return I * t + A * (1 - t);
 	}
 
-	inline Mat<>& Haze(Mat<>& I, Mat<>& O, Mat<>& A, double dis, double beta) {
-		static Mat<> tmp(3);
+	inline Mat<float>& Haze(Mat<float>& I, Mat<float>& O, Mat<float>& A, double dis, double beta) {
+		static Mat<float> tmp(3);
 		double t = exp(-beta * dis);
 
 		mul(O, t, I);

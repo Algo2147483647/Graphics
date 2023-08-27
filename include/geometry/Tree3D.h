@@ -1,4 +1,4 @@
-#include "../Matrix/Matrix.h"
+#include "Matrix.h"
 
 void Tree3D(vector<double>& center, 
 	        vector<double>& direction, 

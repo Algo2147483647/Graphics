@@ -1,7 +1,7 @@
 #ifndef IMAGE_PROCESSING_OTHER_OPERATE_H
 #define IMAGE_PROCESSING_OTHER_OPERATE_H
 
-#include "../../LiGu_AlgorithmLib/BasicMachineLearning.h"
+#include "BasicMachineLearning.h"
 
 #define PI 3.141592653589
 
@@ -12,7 +12,7 @@ namespace ImageProcessing {
 	 *	[Ŀ��]: �򻯾���ͼ���е�ɫ��.
 	 *	[�㷨]: K-Mean��ֵ����
 	 */
-	void K_Mean(Mat<>& x, int K, int TimesMax, Mat<>& Center, Mat<int>& Cluster, Mat<int>& Cluster_Cur) {
+	void K_Mean(Mat<float>& x, int K, int TimesMax, Mat<float>& Center, Mat<int>& Cluster, Mat<int>& Cluster_Cur) {
 		int Dimension = x.rows, N = x.cols;
 
 		Center.zero(Dimension, K);
@@ -38,7 +38,7 @@ namespace ImageProcessing {
 
 			//[4] 
 			for (int i = 0; i < N; i++) {	
-				Mat<> d(1, K);
+				Mat<float> d(1, K);
 
 				for (int j = 0; j < K; j++)
 					for (int dim = 0; dim < Dimension; dim++)
@@ -51,7 +51,7 @@ namespace ImageProcessing {
 			}
 
 			//[6] 
-			Mat<> CenterTemp(Dimension, K);
+			Mat<float> CenterTemp(Dimension, K);
 			for (int i = 0; i < K; i++) {
 				for (int dim = 0; dim < Dimension; dim++) {
 
@@ -77,9 +77,9 @@ namespace ImageProcessing {
 		}
 	}
 
-	Mat<>* ColorCluster(Mat<>* in, Mat<>* out, int K = 3, int TimesMax = 0x7FFFFFFF) {
+	Mat<float>* ColorCluster(Mat<float>* in, Mat<float>* out, int K = 3, int TimesMax = 0x7FFFFFFF) {
 		// Process in & out
-		Mat<> data(3, in[0].size());
+		Mat<float> data(3, in[0].size());
 		for (int k = 0; k < 3; k++)
 			for (int i = 0; i < in[0].rows; i++)
 				for (int j = 0; j < in[0].cols; j++)
@@ -89,7 +89,7 @@ namespace ImageProcessing {
 			out[k].zero(in[0].rows, in[0].cols);
 
 		// Color Cluster
-		Mat<> Center;
+		Mat<float> Center;
 		Mat<int> Cluster, Cluster_Cur;
 
 		K_Mean(data, K, Center, Cluster, Cluster_Cur, TimesMax);
@@ -108,15 +108,15 @@ namespace ImageProcessing {
 		-2,0,2,
 		-1,0,1
 	};
-	Mat<> SobelKernel(3, 3, SobelKernelTmp);
+	Mat<float> SobelKernel(3, 3, SobelKernelTmp);
 
 	/*
 	 *				��Ե���
 	 *	[Ŀ��]: ��ʶ����ͼ�������ȱ仯���Եĵ�.
 	 *	[��ʽ]: EdgeImage = Conv(Image , SobelKernel)
 	 */
-	Mat<>& EdgeDetection(Mat<>& in, Mat<>& out) {
-		Mat<> out_x, out_y;
+	Mat<float>& EdgeDetection(Mat<float>& in, Mat<float>& out) {
+		Mat<float> out_x, out_y;
 		conv(out_x, in, SobelKernel, 1);
 		conv(out_y, in, SobelKernel.transpose(out_y), 1);
 
@@ -130,11 +130,11 @@ namespace ImageProcessing {
 	 *		����Ҷ�任
 	 *	[Ŀ��]: תƵ��ͼ��.
 	 */
-	Mat<>& FourierTransform(Mat<>& in, Mat<>& out) {
+	Mat<float>& FourierTransform(Mat<float>& in, Mat<float>& out) {
 		return out;
 	}
 
-	Mat<>& InvFourierTransform(Mat<>& in, Mat<>& out) {
+	Mat<float>& InvFourierTransform(Mat<float>& in, Mat<float>& out) {
 		return out;
 	}
 
@@ -142,11 +142,11 @@ namespace ImageProcessing {
 	 *				Gauss �˲�
 	 * [����]: in: ����ԭͼ out: ���ͼ��  size: �˵Ĵ�С  sigma: ��̬�ֲ���׼��
 	 */
-	Mat<>& GaussFilter(Mat<>& in, int size, float sigma, Mat<>& out) {
+	Mat<float>& GaussFilter(Mat<float>& in, int size, float sigma, Mat<float>& out) {
 		if (size <= 0 || sigma == 0)
 			return out;
 
-		Mat<> GaussKernel(size, size);
+		Mat<float> GaussKernel(size, size);
 		for (int y = 0; y < size; y++)
 			for (int x = 0; x < size; x++)
 				GaussKernel(x, y) = 1 / (2 * PI * sigma * sigma) * exp(-(pow(x - size / 2, 2) + pow(y - size / 2, 2)) / (2 * sigma * sigma));
@@ -157,7 +157,7 @@ namespace ImageProcessing {
 	 *								ֱ��ͼ
 	 * [Ŀ��]: ͳ��[0,255]���ȵ����ظ����ֲ�.
 	 */
-	Mat<int>& Histograms(Mat<>& in, Mat<>& out) {
+	Mat<int>& Histograms(Mat<float>& in, Mat<float>& out) {
 		out.zero(0xFF);
 		for (int i = 0; i < in.size(); i++)
 			out[(unsigned char)(in[i] * 0xFF)]++;

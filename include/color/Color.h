@@ -1,6 +1,7 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+#include <algorithm>
 #include "RGB.h"
 #include "HSV.h"
 
@@ -8,18 +9,20 @@ using namespace std;
 
 void RGB2HSV(double& r, double& g, double& b, 
              double& h, double& s, double& v) {
-    double max_val = max(r, max(g, b));
-    double min_val = min(r, min(g, b));
+    double max_val = std::max({ r, g, b });
+    double min_val = std::min({ r, g, b });
     double diff = max_val - min_val;
 
-    double h, s, v;
+    // Calculate value
     v = max_val;
 
+    // Calculate hue & saturation
     if (max_val == 0.0) {
         s = 0.0;
         h = -1.0;
     } else {
         s = diff / max_val;
+
         if (r == max_val) {
             h = (g - b) / diff;
         } else if (g == max_val) {
@@ -29,6 +32,8 @@ void RGB2HSV(double& r, double& g, double& b,
         }
 
         h *= 60.0;
+
+        // Ensure hue is non-negative
         if (h < 0.0) {
             h += 360.0;
         }
@@ -37,8 +42,6 @@ void RGB2HSV(double& r, double& g, double& b,
 
 void HSV2RGB(double& h, double& s, double& v, 
              double& r, double& g, double& b) {
-
-    double r, g, b;
 
     if (s == 0.0) {
         r = v;

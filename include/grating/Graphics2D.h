@@ -4,8 +4,8 @@
 #include <algorithm>
 #include <queue>
 #include <vector>
-#include "../../../Math/src/Matrix/Mat.h"
-#include "./Geometry/bezier_curve.h"
+#include "Mat.h"
+#include "bezier_curve.h"
 #include "RGB.h"
 #include "font.h"
 
@@ -16,7 +16,7 @@ using namespace std;
 namespace Graphics {
 	typedef long long	int64; 
 	typedef float		fp32;
-	typedef double		fp64;
+	typedef float		fp64;
 
 	extern ARGB PaintColor;
 	extern int  PaintSize, FontSize;
@@ -31,18 +31,18 @@ namespace Graphics {
 	void drawTriangle	(Mat<ARGB>& image, int x1, int y1, 
 										   int x2, int y2, int x3, int y3);				//画三角形
 	void drawRectangle	(Mat<ARGB>& image, int x1, int y1, int x2, int y2);				//画矩形
-	void fillRectangle	(Mat<ARGB>& image, int sx, int sy, int ex, int ey, ARGB color);	//填充矩形
+	void fillRectangle	(Mat<ARGB>& image, int sx, int sy, int ex, int ey);				//填充矩形
 	void drawRegularPolygon	
-						(Mat<ARGB>& image, int  x, int  y, int l, int n, double a0 = 0);//画正多边形
+						(Mat<ARGB>& image, int  x, int  y, int l, int n, float a0 = 0);//画正多边形
 	void drawPolygon	(Mat<ARGB>& image, int* x, int* y, int n);						//画多边形
 	void fillPolygon	(Mat<ARGB>& image, int* x, int* y, int n);						//填充多边形
-	void drawBezier		(Mat<ARGB>& image, vector<vector<double>>& points, int n);
+	void drawBezier		(Mat<ARGB>& image, vector<vector<float>>& points, int n);
 
 	// Tessellation
 	void drawGrid		(Mat<ARGB>& image, int sx, int sy, int ex, int ey, int dx, int dy);	//画网格
 
 	// Fill
-	void fillFlood		(Mat<ARGB>& image, int x0, int y0, ARGB color);					//泛滥填充
+	void fillFlood		(Mat<ARGB>& image, int x0, int y0);								//泛滥填充
 
 	// Text
 	void drawChar		(Mat<ARGB>& image, int x0, int y0, char charac);				//显示字符

@@ -1,7 +1,7 @@
 /*
  *  Perlin Noise
  */
-double PerlinNoise(double x, double y, Mat<>& randomGridGradient) {
+double PerlinNoise(double x, double y, Mat<float>& randomGridGradient) {
 	// 对四个格点
 	int x0[] = { x, x + 1, x, x + 1 }, 
 		y0[] = { y, y, y + 1, y + 1 };
@@ -21,8 +21,8 @@ double PerlinNoise(double x, double y, Mat<>& randomGridGradient) {
 	return (ix1 - ix0) * (3.0 - sy * 2.0) * sy * sy + ix0;
 }
 
-Mat<>& PerlinNoise(Mat<>& output, int frequency) {
-	Mat<> randomGridGradient;
+Mat<float>& PerlinNoise(Mat<float>& output, int frequency) {
+	Mat<float> randomGridGradient;
 	randomGridGradient.rands(frequency + 1, frequency + 1, 0, 256);
 	for (int y = 0; y < output.cols; y++)
 		for (int x = 0; x < output.rows; x++)

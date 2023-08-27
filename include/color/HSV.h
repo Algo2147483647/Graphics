@@ -3,6 +3,6 @@
 
 struct HSV {
     double H, S, V;
-}
+};
 
 #endif

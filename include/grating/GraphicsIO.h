@@ -2,10 +2,10 @@
 #define GRAPHICS_IO_H
 
 #include <vector>
-#include "../../../Math/src/Matrix/Mat.h"
+#include "Mat.h"
 #include "RGB.h"
 
-namespace GraphicsIO {
+namespace Graphics {
 /******************************************************************************
 *					.PPM 文件编码/解码
 *	[格式]:
@@ -16,7 +16,7 @@ namespace GraphicsIO {
 		P2	Graymap	ASCII			P5	Graymap	Binary
 		P3	Pixmap	ASCII			P6	Pixmap	Binary
 ******************************************************************************/
-static void ppmRead(const char* fileName, Mat<RGB>& image) {
+inline void ppmRead(const char* fileName, Mat<RGB>& image) {
 	FILE* fi = fopen(fileName, "rb");
 	int rows, cols;
 	fscanf(fi, "P6\n%d %d\n255\n", &cols, &rows);						// 读图片格式、宽高、最大像素值
@@ -25,14 +25,14 @@ static void ppmRead(const char* fileName, Mat<RGB>& image) {
 	fclose(fi);
 }
 
-static void ppmWrite(const char* fileName, Mat<RGB>& image) {
+inline void ppmWrite(const char* fileName, Mat<RGB>& image) {
 	FILE* fo = fopen(fileName, "wb");
 	fprintf(fo, "P6\n%d %d\n255\n", image.cols, image.rows);			// 写图片格式、宽高、最大像素值
 	fwrite(image.data, 1, image.size() * 3, fo);						// 写RGB数据
 	fclose(fo);
 }
 
-static void ppmWrite(const char* fileName, Mat<ARGB>& image) {
+inline void ppmWrite(const char* fileName, Mat<ARGB>& image) {
 	Mat<RGB> imgT(image.rows, image.cols);
 	for (int i = 0; i < image.size(); i++) {
 		imgT(i).B = (unsigned char) image(i);
@@ -43,14 +43,14 @@ static void ppmWrite(const char* fileName, Mat<ARGB>& image) {
 	ppmWrite(fileName, imgT);
 }
 
-static void ppmWrite(const char* fileName, Mat<unsigned char>& image) {
+inline void ppmWrite(const char* fileName, Mat<unsigned char>& image) {
 	FILE* fo = fopen(fileName, "wb");
 	fprintf(fo, "P5\n%d %d\n255\n", image.cols, image.rows);			// 写图片格式、宽高、最大像素值
 	fwrite(image.data, 1, image.size(), fo);							// 写RGB数据
 	fclose(fo);
 }
 
-static void ppmWrite(const char* fileName, Mat<double>& image) {
+inline void ppmWrite(const char* fileName, Mat<double>& image) {
 	Mat<unsigned char> t(image.rows, image.cols);
 	for (int i = 0; i < image.size(); i++) 
 		t[i] = image[i] * 0xFF;
@@ -69,7 +69,7 @@ static void ppmWrite(const char* fileName, Mat<double>& image) {
 			[3.4] 顶点3 (3x4B)
 			[3.5] 属性	(2B)
 ******************************************************************************/
-static void stlRead(const char* fileName, Mat<>& faceVec, Mat<>& p1, Mat<>& p2, Mat<>& p3, Mat<short>& attribute) {
+inline void stlRead(const char* fileName, Mat<float>& faceVec, Mat<float>& p1, Mat<float>& p2, Mat<float>& p3, Mat<short>& attribute) {
 	FILE* fi = fopen(fileName, "rb");
 	unsigned char head[80];
 	unsigned int  N; 
@@ -104,7 +104,7 @@ static void stlRead(const char* fileName, Mat<>& faceVec, Mat<>& p1, Mat<>& p2, 
 	fclose(fi);
 }
 
-static void stlWrite(
+inline void stlWrite(
 	const char* fileName, 
 	const char* head,
 	Mat<float>& faceVec, 
@@ -137,11 +137,8 @@ static void stlWrite(
 	}
 	fclose(fo);
 }
-
-static void stlWrite(
-	const char* fileName,
-	vector<vector<double>>& triangleSet
-) {
+/*
+inline void stlWrite(const char* fileName, vector<vector<double>>& triangleSet) {
 	int n = triangleSet.size();
 	char head[80];
 	Mat<float>
@@ -165,7 +162,7 @@ static void stlWrite(
 	}
 
 	stlWrite(fileName, head, faceVec, p1, p2, p3, attribute);
-}
+}*/
 
 }
 #endif
