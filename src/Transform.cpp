@@ -1,6 +1,6 @@
 #include "Transform.h"
 
-Mat<> Graphics::TransformMat(4, 4);
+Mat<float> Graphics::TransformMat(4, 4);
 
 /*#############################################################################
 
@@ -9,8 +9,8 @@ Mat<> Graphics::TransformMat(4, 4);
 ##############################################################################*/
 
 // 平移
-Mat<>& Graphics::translate(Mat<>& delta) {
-	static Mat<> translateMat;
+Mat<float>& Graphics::translate(Mat<float>& delta) {
+	static Mat<float> translateMat;
 	Matrix::E(translateMat.alloc(TransformMat.rows, TransformMat.cols));
 
 	for (int i = 0; i < delta.rows; i++) 
@@ -21,8 +21,8 @@ Mat<>& Graphics::translate(Mat<>& delta) {
 }
 
 // 旋转
-Mat<>& Graphics::rotate(Mat<>& theta, Mat<>& center) {
-	static Mat<> tmp, rotateMat(TransformMat.rows - 1, TransformMat.cols - 1);
+Mat<float>& Graphics::rotate(Mat<float>& theta, Mat<float>& center) {
+	static Mat<float> tmp, rotateMat(TransformMat.rows - 1, TransformMat.cols - 1);
 	translate(Matrix::negative(tmp, center));
 
 	Matrix::rotate(theta, rotateMat);
@@ -35,11 +35,11 @@ Mat<>& Graphics::rotate(Mat<>& theta, Mat<>& center) {
 }
 
 // 3D·四元数
-Mat<>& Graphics::rotate(Mat<>& rotateAxis, double theta, Mat<>& center) {
+Mat<float>& Graphics::rotate(Mat<float>& rotateAxis, double theta, Mat<float>& center) {
 	if (TransformMat.rows != 4 || TransformMat.cols != 4)
 		exit(-1);
 
-	static Mat<> tmp, rotateMat;
+	static Mat<float> tmp, rotateMat;
 	translate(Matrix::negative(tmp, center));
 
 	Matrix::rotate(rotateAxis, theta, rotateMat);
@@ -50,8 +50,8 @@ Mat<>& Graphics::rotate(Mat<>& rotateAxis, double theta, Mat<>& center) {
 }
 
 // 缩放
-Mat<>& Graphics::scale(Mat<>& ratio, Mat<>& center) {
-	static Mat<> tmp, scaleMat;
+Mat<float>& Graphics::scale(Mat<float>& ratio, Mat<float>& center) {
+	static Mat<float> tmp, scaleMat;
 	translate(Matrix::negative(tmp, center));
 
 	Matrix::scale(ratio, scaleMat);
@@ -64,8 +64,8 @@ Mat<>& Graphics::scale(Mat<>& ratio, Mat<>& center) {
 }
 
 // 镜像
-Mat<>& Graphics::reflect(Mat<>& e, Mat<>& center) {
-	Mat<> tmp, reflectMat;
+Mat<float>& Graphics::reflect(Mat<float>& e, Mat<float>& center) {
+	Mat<float> tmp, reflectMat;
 	translate(Matrix::negative(tmp, center));
 
 	Matrix::reflect(e, reflectMat);
@@ -79,6 +79,6 @@ Mat<>& Graphics::reflect(Mat<>& e, Mat<>& center) {
 
 // 透视投影
 /*
-Mat<>& Graphics::perspect(Mat<>& e, Mat<>& center) {
+Mat<float>& Graphics::perspect(Mat<float>& e, Mat<float>& center) {
 
 }*/

@@ -8,12 +8,12 @@ using namespace ObjectLib;
 
 ##############################################################################*/
 
-std::vector<Mat<>>  RayTracing::PointLight;
+std::vector<Mat<float>>  RayTracing::PointLight;
 int RayTracing::maxRayLevel = 6;
 
 
 bool RayTracing::haze = 1;
-Mat<> RayTracing::haze_A{ 3 };
+Mat<float> RayTracing::haze_A{ 3 };
 double RayTracing::haze_beta = 1e-3;
 
 /*--------------------------------[ 渲染 ]--------------------------------
@@ -25,11 +25,11 @@ double RayTracing::haze_beta = 1e-3;
 			[5] 基于结果绘制该像素色彩
 -------------------------------------------------------------------------*/
 
-static void RayTracing::traceRay_func(Mat<>* ScreenXVec, Mat<>* ScreenYVec, Mat<>* center, Mat<>* direct, 
+static void RayTracing::traceRay_func(Mat<float>* ScreenXVec, Mat<float>* ScreenYVec, Mat<float>* center, Mat<float>* direct, 
 	ObjectTree* objTree, double rate, 
-	Mat<>* R, Mat<>* G, Mat<>* B, int st, int ed
+	Mat<float>* R, Mat<float>* G, Mat<float>* B, int st, int ed
 ) {
-	Mat<> SampleVec, SampleXVec, SampleYVec, Ray, RaySt, color(3);
+	Mat<float> SampleVec, SampleXVec, SampleYVec, Ray, RaySt, color(3);
 
 	for (int i = st; i < ed; i++) {
 		add(SampleVec,														//[3]
@@ -49,13 +49,13 @@ static void RayTracing::traceRay_func(Mat<>* ScreenXVec, Mat<>* ScreenYVec, Mat<
 }
 
 void RayTracing::traceRay_(
-	Mat<>& center, Mat<>& direct, double width, double height,
+	Mat<float>& center, Mat<float>& direct, double width, double height,
 	ObjectTree& objTree,
-	Mat<>& R, Mat<>& G, Mat<>& B,
+	Mat<float>& R, Mat<float>& G, Mat<float>& B,
 	int sampleSt, int sampleEd
 ) {
 	//[1]
-	static Mat<> ScreenXVec, ScreenYVec(3);
+	static Mat<float> ScreenXVec, ScreenYVec(3);
 	normalize(ScreenYVec = { -direct[1], direct[0], 0 });			//屏幕Y向轴始终与Z轴垂直,无z分量, 且与direct正交(内积为零)
 	normalize(cross_(ScreenXVec, direct, ScreenYVec));				//屏幕X向轴与屏幕轴、屏幕Y向轴正交
 
@@ -86,18 +86,18 @@ void RayTracing::traceRay_(
 
 
 void RayTracing::traceRay(
-	Mat<>& center, Mat<>& direct, double preSize,
+	Mat<float>& center, Mat<float>& direct, double preSize,
 	ObjectTree& objTree,
-	Mat<>& R, Mat<>& G, Mat<>& B,
+	Mat<float>& R, Mat<float>& G, Mat<float>& B,
 	int sampleSt, int sampleEd
 ) {
 	//[1]
-	static Mat<> ScreenXVec, ScreenYVec(3);
+	static Mat<float> ScreenXVec, ScreenYVec(3);
 	normalize(ScreenYVec = { -direct[1], direct[0], 0 });			//屏幕Y向轴始终与Z轴垂直,无z分量, 且与direct正交(内积为零)
 	normalize(cross_(ScreenXVec, direct, ScreenYVec));				//屏幕X向轴与屏幕轴、屏幕Y向轴正交
 
 	//[2]
-	static Mat<> SampleYVec, SampleXVec, SampleVec, Ray, RaySt, color(3);
+	static Mat<float> SampleYVec, SampleXVec, SampleVec, Ray, RaySt, color(3);
 	clock_t start = clock();
 
 	for (int sample = sampleSt; sample < sampleEd; sample++) {
@@ -140,7 +140,7 @@ void RayTracing::traceRay(
 			计算三角形反射方向，将反射光线为基准重新计算
 &	[注]:distance > 1而不是> 0，是因为反射光线在接触面的精度内，来回碰自己....
 ******************************************************************************/
-Mat<>& RayTracing::traceRay(ObjectTree& objTree, Mat<>& RaySt, Mat<>& Ray, Mat<>& color, int level) 
+Mat<float>& RayTracing::traceRay(ObjectTree& objTree, Mat<float>& RaySt, Mat<float>& Ray, Mat<float>& color, int level) 
 {
 	Object* obj; 
 	double dis = objTree.seekIntersection(RaySt, Ray, obj); 
@@ -161,7 +161,7 @@ Mat<>& RayTracing::traceRay(ObjectTree& objTree, Mat<>& RaySt, Mat<>& Ray, Mat<>
 		Material* material = obj->material;
 
 		//计算面矢、交点
-		static Mat<> faceVec(3), tmp;
+		static Mat<float> faceVec(3), tmp;
 
 		add(RaySt, RaySt, mul(tmp, dis, Ray));
 		FaceVector(*obj, RaySt, faceVec);
@@ -173,7 +173,7 @@ Mat<>& RayTracing::traceRay(ObjectTree& objTree, Mat<>& RaySt, Mat<>& Ray, Mat<>
 		if (level == 0) 
 			refractColorIndex = RAND_DBL * 3, refractRateBuf = 1, isChromaticDisperson = 0;
 		
-		static Mat<> Ray0; 
+		static Mat<float> Ray0; 
 		Ray0 = Ray;
 
 		//快速反射

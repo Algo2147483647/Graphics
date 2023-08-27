@@ -110,8 +110,8 @@ void Graphics::drawRectangle(Mat<ARGB>& image, int x1, int y1, int x2, int y2)
 	drawLine(image, x2, y1, x2, y2);
 }
 
-void Graphics::drawRegularPolygon (Mat<ARGB>& image, int  x, int  y, int l, int n, double a0) {
-    double a = 2 * PI / n;
+void Graphics::drawRegularPolygon (Mat<ARGB>& image, int  x, int  y, int l, int n, float a0) {
+    float a = 2 * PI / n;
 
     for (int i = 1; i < n; i++) 
 		drawLine(image, 
@@ -216,60 +216,61 @@ void Graphics::drawGrid(Mat<ARGB>& image, int sx, int sy, int ex, int ey, int dx
 }
 
 /*----------------[ DRAW BEZIER CURVE ]----------------*/
-void Graphics::drawBezier(Mat<ARGB>& image, vector<vector<double>>& points, int n)
+void Graphics::drawBezier(Mat<ARGB>& image, vector<vector<float>>& points, int n)
 {
-	vector<double> p;
+	vector<vector<float>> p;
+
+	BezierCurve(points, n, p);
 
 	for (int i = 0; i <= n; i++) {
-		double t = i / (double)n;
-		BezierCurve(points, n, p);
-		drawPoint(image, (int)p[0], (int)p[1]);
+		drawPoint(image, (int)p[i][0], (int)p[i][1]);
 	}
 }
 
 /*---------------- 填充 ----------------*/
-void Graphics::fillRectangle(Mat<ARGB>& image, int sx, int sy, int ex, int ey, ARGB color)
+void Graphics::fillRectangle(Mat<ARGB>& image, int sx, int sy, int ex, int ey)
 {
 	if (sy > ey) std::swap(ey, sy);
 	if (sx > ex) std::swap(ex, sx);
 
 	for (int y = sy; y <= ey; y++)
 		for (int x = sx; x <= ex; x++)
-			image(x, y) = color;
+			image(x, y) = PaintColor;
 }
 
 /*---------------- FLOOD 填充 ----------------*/
-void Graphics::fillFlood(Mat<ARGB>& image, int x0, int y0, ARGB color)
+void Graphics::fillFlood(Mat<ARGB>& image, int x0, int y0)
 {
-	ARGB color0 = image(x0, y0);
-	int x_step[] = { 0,0,1,-1,1,1,-1,-1 },
-		y_step[] = { 1,-1,0,0,1,-1,1,-1 };
-	std::queue<int> Qx, Qy;
-	Qx.push(x0);
-	Qy.push(y0);
-	image(x0, y0) = color;
+	int x_step[] = { 0, 0, 1,-1, 1, 1,-1,-1 },
+		y_step[] = { 1,-1, 0, 0, 1,-1, 1,-1 };
 
-	while (!Qx.empty()) {
-		int x = Qx.front(),
-			y = Qy.front();
+	queue<pair<int, int>> Q;
+	Q.push({ x0 , y0 });
+
+	ARGB color0 = image(x0, y0);
+	image(x0, y0) = PaintColor;
+
+	while (!Q.empty()) {
+		int x = Q.front().first;
+		int y = Q.front().second;
+		Q.pop();
+
 		for (int i = 0; i < 8; i++) {
 			int xt = x + x_step[i],
 				yt = y + y_step[i];
-			if (image(xt, yt) == color0 && !image.isOut(xt, yt)) {
-				image(xt, yt) = color;
-				Qx.push(xt);
-				Qy.push(yt);
+
+			if (!image.isOut(xt, yt) && image(xt, yt) == color0) {
+				image(xt, yt) = PaintColor;
+				Q.push({ xt, yt });
 			}
 		}
-		Qx.pop();
-		Qy.pop();
 	}
 }
 
 /*---------------- 扫描线填充 ----------------*/
 struct fillPolygon_Edge {								//边表(链表)
 	int ymax;											//ymax:边的下端点
-	double x, dx;										//x:当前水平扫描线的交点//dx:斜率m的倒数
+	float x, dx;										//x:当前水平扫描线的交点//dx:斜率m的倒数
 	fillPolygon_Edge* next = NULL;
 };
 
@@ -299,7 +300,7 @@ void Graphics::fillPolygon(Mat<ARGB>& image, int* x, int* y, int n)
 		fillPolygon_Edge* tE = new fillPolygon_Edge;	//创建新边表节点
 		tE->ymax = y1 > y2 ? y1 : y2; 					//下端点ymin,上端点ymax,下端点x,斜率倒数
 		tE->x = y1 < y2 ? x1 : x2;
-		tE->dx = (double)(x2 - x1) / (y2 - y1);
+		tE->dx = (float)(x2 - x1) / (y2 - y1);
 		tE->next = ET[ymin - minY]->next;
 		ET[ymin - minY]->next = tE;						//插入ET
 	}
@@ -361,8 +362,7 @@ void Graphics::drawChar(Mat<ARGB>& image, int x0, int y0, char charac)
 					image,
 					x * k + x0, y * k + y0, 
 					(x + 1) * k + x0, 
-					(y + 1) * k + y0, 
-					PaintColor
+					(y + 1) * k + y0
 				);
 			t <<= 1; 
 			x++;

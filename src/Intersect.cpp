@@ -12,7 +12,7 @@ double Intersect::eps = 1e-5;
 /*
  * 线段、线段交点
  */
-bool OnSegments(Mat<>& p1, Mat<>& p2, Mat<>& p3) {
+bool OnSegments(Mat<float>& p1, Mat<float>& p2, Mat<float>& p3) {
 	if (std::min(p1(1), p2(1)) <= p3(1) 
 	&&  std::max(p1(1), p2(1)) >= p3(1)
 	&&  std::min(p1(2), p2(2)) <= p3(2) 
@@ -22,7 +22,7 @@ bool OnSegments(Mat<>& p1, Mat<>& p2, Mat<>& p3) {
 	return false;
 }
 
-bool Intersect::Segments(Mat<>& p1, Mat<>& p2, Mat<>& p3, Mat<>& p4) {
+bool Intersect::Segments(Mat<float>& p1, Mat<float>& p2, Mat<float>& p3, Mat<float>& p4) {
 	double 
 		d1 = (p1(1) - p3(1)) * (p4(2) - p3(2)) - (p4(1) - p3(1)) * (p1(2) - p3(2)),
 		d2 = (p2(1) - p3(1)) * (p4(2) - p3(2)) - (p4(1) - p3(1)) * (p2(2) - p3(2)),
@@ -51,7 +51,7 @@ bool Intersect::Segments(Mat<>& p1, Mat<>& p2, Mat<>& p3, Mat<>& p4) {
 /* 
  * 射线、平面交点
  */
-double Intersect::RayPlane(Mat<>& raySt, Mat<>& ray, Mat<>& a, double b) {
+double Intersect::RayPlane(Mat<float>& raySt, Mat<float>& ray, Mat<float>& a, double b) {
 	double t = dot(a, ray);
 	if (t < eps) 
 		return DBL_MAX;
@@ -60,7 +60,7 @@ double Intersect::RayPlane(Mat<>& raySt, Mat<>& ray, Mat<>& a, double b) {
 }
 
 //3D
-double Intersect::RayPlane(Mat<>& raySt, Mat<>& ray, double& A, double& B, double& C, double& D) {
+double Intersect::RayPlane(Mat<float>& raySt, Mat<float>& ray, double& A, double& B, double& C, double& D) {
 	double t = A * ray[0] + B * ray[1] + C * ray[2];
 	if (t < eps) 
 		return DBL_MAX;
@@ -71,13 +71,13 @@ double Intersect::RayPlane(Mat<>& raySt, Mat<>& ray, double& A, double& B, doubl
 /*
  * 射线、平面图案
  */
-double Intersect::RayPlaneShape(Mat<>& raySt, Mat<>& ray, Mat<>& center, Mat<>& normal, Mat<>& one, bool(*f)(double, double)) {
+double Intersect::RayPlaneShape(Mat<float>& raySt, Mat<float>& ray, Mat<float>& center, Mat<float>& normal, Mat<float>& one, bool(*f)(double, double)) {
 	double
 		d = RayPlane(raySt, ray, normal, dot(normal, center));
 	if (d == DBL_MAX) 
 		return DBL_MAX;
 
-	static Mat<> delta, tmp;
+	static Mat<float> delta, tmp;
 	sub(delta, add(delta, raySt, mul(delta, d, ray)), center);
 	cross_(tmp, delta, one);
 	return f(dot(delta, one), (dot(tmp, normal) > 0 ? 1 : -1) * norm(tmp)) ? d : DBL_MAX;
@@ -86,13 +86,13 @@ double Intersect::RayPlaneShape(Mat<>& raySt, Mat<>& ray, Mat<>& center, Mat<>& 
 /*
  * 射线、圆交点
  */
-double Intersect::RayCircle(Mat<>& raySt, Mat<>& ray, Mat<>& center, double& R, Mat<>& normal) {
+double Intersect::RayCircle(Mat<float>& raySt, Mat<float>& ray, Mat<float>& center, double& R, Mat<float>& normal) {
 	double
 		d = RayPlane(raySt, ray, normal, dot(normal, center));
 	if (d == DBL_MAX) 
 		return DBL_MAX;
 
-	static Mat<> tmp;
+	static Mat<float> tmp;
 	add(tmp, raySt, mul(tmp, d, ray));
 	sub(tmp, tmp, center);
 	return norm(tmp) <= R ? d : DBL_MAX;
@@ -101,8 +101,8 @@ double Intersect::RayCircle(Mat<>& raySt, Mat<>& ray, Mat<>& center, double& R, 
 /*
  * 射线、三角形交点
  */
-double Intersect::RayTriangle(Mat<>& raySt, Mat<>& ray, Mat<>& p1, Mat<>& p2, Mat<>& p3) {
-	static Mat<> edge[2], tmp, p, q;
+double Intersect::RayTriangle(Mat<float>& raySt, Mat<float>& ray, Mat<float>& p1, Mat<float>& p2, Mat<float>& p3) {
+	static Mat<float> edge[2], tmp, p, q;
 	sub(edge[0], p2, p1);
 	sub(edge[1], p3, p1);
 
@@ -131,8 +131,8 @@ double Intersect::RayTriangle(Mat<>& raySt, Mat<>& ray, Mat<>& p1, Mat<>& p2, Ma
 /*
  * 射线、球面交点
  */
-double Intersect::RaySphere(Mat<>& raySt, Mat<>& ray, Mat<>& center, double& R) {
-	static Mat<> rayStCenter;
+double Intersect::RaySphere(Mat<float>& raySt, Mat<float>& ray, Mat<float>& center, double& R) {
+	static Mat<float> rayStCenter;
 	sub(rayStCenter, raySt, center);
 
 	double
@@ -151,8 +151,8 @@ double Intersect::RaySphere(Mat<>& raySt, Mat<>& ray, Mat<>& center, double& R) 
 /*
  * 射线、球面图案交点
  */
-double Intersect::RaySphere(Mat<>& raySt, Mat<>& ray, Mat<>& center, double& R, bool(*f)(double, double)) {
-	static Mat<> rayStCenter;
+double Intersect::RaySphere(Mat<float>& raySt, Mat<float>& ray, Mat<float>& center, double& R, bool(*f)(double, double)) {
+	static Mat<float> rayStCenter;
 	sub(rayStCenter, raySt, center);
 
 	double
@@ -168,7 +168,7 @@ double Intersect::RaySphere(Mat<>& raySt, Mat<>& ray, Mat<>& center, double& R, 
 
 	if (f != NULL) {
 		static double d; 
-		static Mat<> delta;
+		static Mat<float> delta;
 
 		if ((d = (-B - Delta) / (2 * A)) > 1e-4) {
 			sub(delta, add(delta, raySt, mul(delta, d, ray)), center);
@@ -196,8 +196,8 @@ double Intersect::RaySphere(Mat<>& raySt, Mat<>& ray, Mat<>& center, double& R, 
 /*
  * 射线、二次曲面交点
  */
-double Intersect::RayQuadric(Mat<>& raySt, Mat<>& ray, Mat<>& center, Mat<>& G) {
-	static Mat<> rayStCenter, tmp;
+double Intersect::RayQuadric(Mat<float>& raySt, Mat<float>& ray, Mat<float>& center, Mat<float>& G) {
+	static Mat<float> rayStCenter, tmp;
 	sub(rayStCenter, raySt, center);
 
 	double
@@ -216,11 +216,11 @@ double Intersect::RayQuadric(Mat<>& raySt, Mat<>& ray, Mat<>& center, Mat<>& G) 
 /*
  * 射线、矩体交点
  */
-double Intersect::RayCuboid(Mat<>& raySt, Mat<>& ray, Mat<>& p1, Mat<>& p2, Mat<>& p3) {
+double Intersect::RayCuboid(Mat<float>& raySt, Mat<float>& ray, Mat<float>& p1, Mat<float>& p2, Mat<float>& p3) {
 	return DBL_MAX;
 }
 
-double Intersect::RayCuboid(Mat<>& raySt, Mat<>& ray, Mat<>& pmin, Mat<>& pmax) {
+double Intersect::RayCuboid(Mat<float>& raySt, Mat<float>& ray, Mat<float>& pmin, Mat<float>& pmax) {
 	double t0 = -DBL_MAX, t1 = DBL_MAX;
 
 	for (int dim = 0; dim < 3; dim++) {
@@ -245,7 +245,7 @@ double Intersect::RayCuboid(Mat<>& raySt, Mat<>& ray, Mat<>& pmin, Mat<>& pmax) 
 /*
  * 射线、圆环交点
  */
-double Intersect::RayTorus(Mat<>& raySt, Mat<>& ray, Mat<>& center, double R, double r) {
+double Intersect::RayTorus(Mat<float>& raySt, Mat<float>& ray, Mat<float>& center, double R, double r) {
 	double dx = ray[0], dy = ray[1], dz = ray[2],
 		x0 = raySt[0], y0 = raySt[1], z0 = raySt[2],
 		a = 4 * R * R,
@@ -275,7 +275,7 @@ double Intersect::RayTorus(Mat<>& raySt, Mat<>& ray, Mat<>& center, double R, do
 	return minn;
 }
 /*
-double Intersect::RayPolynomialSurface(Mat<>& raySt, Mat<>& ray, Tensor<>& A) {
+double Intersect::RayPolynomialSurface(Mat<float>& raySt, Mat<float>& ray, Tensor<>& A) {
 	int n = A.dimNum, m = A.dim[0] - 1;
 
 	double dx = ray[0], dy = ray[1], dz = ray[2],
