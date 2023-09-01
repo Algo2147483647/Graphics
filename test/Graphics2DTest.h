@@ -4,6 +4,7 @@
 inline void Graphics2DTest() {
 	// init
 	Mat<ARGB> img(2048, 2048);
+	img.setZero();
 
 	// Draw Point
 	Graphics::PaintColor = 0xFFFFFF;
@@ -124,16 +125,15 @@ inline void Graphics2DTest() {
 		Graphics::PaintColor = 0x880000FF;
 		Graphics::fillRectangle(img, sx + 500, sy + 800, sx + 700, sy + 1100);
 	}
-	/*
+	
 	{ // Sub Graphics
-		Mat<ARGB> subImg(Graphics::gWidth, Graphics::gHeight);
+		Mat<ARGB> subImg = img;
 
-		Graphics::drawCopy(subImg, 0, 0, Graphics::Map, Graphics::gWidth, Graphics::gHeight);
+		/*
 		Graphics::scaling(subImg, 0.2, 0.2, 0, 0);
-		Graphics::transSelf(subImg);
 		Graphics::CutSelf(subImg, 0, 0, Graphics::gWidth / 5, Graphics::gHeight / 5);
-		Graphics::drawCopy(subImg, 0, 500, Graphics::Map, Graphics::gWidth, Graphics::gHeight);
-	}*/
+		Graphics::drawCopy(subImg, 0, 500, Graphics::Map, Graphics::gWidth, Graphics::gHeight);*/
+	}
 
 	// Save .PPM
 	Graphics::ppmWrite("C:/Users/29753/Desktop/out.ppm", img);

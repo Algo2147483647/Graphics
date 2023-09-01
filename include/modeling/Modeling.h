@@ -10,7 +10,6 @@
 #define PI 3.141592653589
 
 using namespace std;
-using namespace Matrix;
 
 class Modeling {
 public:
@@ -53,7 +52,7 @@ void Quadrangle	(Point& p1, Point& p2, Point& p3, Point& p4);
 void ConvexPolygon(vector<Point>& p);
 void Polygon    (Point& c, vector<Point>& p);
 void Circle		(Point& center, double r, int pointNum, double angleSt = 0, double angleEd = 2 * PI);
-void Surface	(Mat<double>& z, double xs, double xe, double ys, double ye, Point* direct);
+//void Surface	(Mat<double>& z, double xs, double xe, double ys, double ye, Point* direct);
 
 /* 3D Graph */
 void Tetrahedron(Point& p1, Point& p2, Point& p3, Point& p4);

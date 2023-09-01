@@ -9,10 +9,14 @@
 ARGB Graphics::PaintColor = 0xFFFFFFFF;
 int  Graphics::PaintSize = 0, Graphics::FontSize = 16;
 
+inline bool isOut(Image& image, int x0, int y0) {
+	return x0 < 0 || x0 >= image.cols() || y0 < 0 || y0 >= image.rows();
+}
+
 /*---------------- 画点 ----------------*/
-void Graphics::drawPoint(Mat<ARGB>& image, int x0, int y0)
+void Graphics::drawPoint(Image& image, int x0, int y0)
 {
-	if (image.isOut(x0, y0)) return;
+	if (isOut(image, x0, y0)) return;
 	image(x0, y0) = PaintColor;										//基础点(点粗==0)
 
 	// 点粗>0时
@@ -24,16 +28,16 @@ void Graphics::drawPoint(Mat<ARGB>& image, int x0, int y0)
 		// 绘制圆 (x=0始,y=x终)
 		while (x <= y) {
 			for (int i = x0 - x; i <= x0 + x; i++) { 				//填充圆内
-				if (!image.isOut(i, y0 - y))
+				if (!isOut(image, i, y0 - y))
 					image(i, y0 - y) = PaintColor;
-				if (!image.isOut(i, y0 + y))
+				if (!isOut(image, i, y0 + y))
 					image(i, y0 + y) = PaintColor;
 			}
 
 			for (int i = x0 - y; i <= x0 + y; i++) { 
-				if (!image.isOut(i, y0 - x))
+				if (!isOut(image, i, y0 - x))
 					image(i, y0 - x) = PaintColor;
-				if (!image.isOut(i, y0 + x))
+				if (!isOut(image, i, y0 + x))
 					image(i, y0 + x) = PaintColor;
 			}
 
@@ -46,7 +50,7 @@ void Graphics::drawPoint(Mat<ARGB>& image, int x0, int y0)
 }
 
 /*---------------- 画线 : Bresenham 算法 ----------------*/
-void Graphics::drawLine(Mat<ARGB>& image, int x1, int y1, int x2, int y2)
+void Graphics::drawLine(Image& image, int x1, int y1, int x2, int y2)
 {
 	int inc[2] = { 0 },
 		delta[2] = { x2 - x1, y2 - y1 },
@@ -82,7 +86,7 @@ void Graphics::drawLine(Mat<ARGB>& image, int x1, int y1, int x2, int y2)
 }
 
 /*---------------- 画折线 ----------------*/
-void Graphics::drawLine(Mat<ARGB>& image, int* x, int* y, int n) {
+void Graphics::drawLine(Image& image, int* x, int* y, int n) {
 	int xt, yt;
 	for (int i = 0; i < n; i++) {
 		if (i != 0)
@@ -93,7 +97,7 @@ void Graphics::drawLine(Mat<ARGB>& image, int* x, int* y, int n) {
 }
 
 /*---------------- 画三角 ----------------*/
-void Graphics::drawTriangle(Mat<ARGB>& image, 
+void Graphics::drawTriangle(Image& image, 
 							int x1, int y1, int x2, int y2, int x3, int y3)
 {
 	drawLine(image, x1, y1, x2, y2);
@@ -102,7 +106,7 @@ void Graphics::drawTriangle(Mat<ARGB>& image,
 }
 
 /*---------------- 画矩形 ----------------*/
-void Graphics::drawRectangle(Mat<ARGB>& image, int x1, int y1, int x2, int y2)
+void Graphics::drawRectangle(Image& image, int x1, int y1, int x2, int y2)
 {
 	drawLine(image, x1, y1, x2, y1);
 	drawLine(image, x1, y1, x1, y2);
@@ -110,7 +114,7 @@ void Graphics::drawRectangle(Mat<ARGB>& image, int x1, int y1, int x2, int y2)
 	drawLine(image, x2, y1, x2, y2);
 }
 
-void Graphics::drawRegularPolygon (Mat<ARGB>& image, int  x, int  y, int l, int n, float a0) {
+void Graphics::drawRegularPolygon (Image& image, int  x, int  y, int l, int n, float a0) {
     float a = 2 * PI / n;
 
     for (int i = 1; i < n; i++) 
@@ -123,7 +127,7 @@ void Graphics::drawRegularPolygon (Mat<ARGB>& image, int  x, int  y, int l, int 
 		x + l * cos(a0), y + l * sin(a0));
 }
 
-void Graphics::drawPolygon(Mat<ARGB>& image, int* x, int* y, int n)
+void Graphics::drawPolygon(Image& image, int* x, int* y, int n)
 {
 	for (int i = 0; i < n; i++)
 		drawLine(image, x[i], y[i], x[(i + 1) % n], y[(i + 1) % n]);
@@ -132,7 +136,7 @@ void Graphics::drawPolygon(Mat<ARGB>& image, int* x, int* y, int n)
 
 
 /*---------------- 画圆 : Bresenham 算法 ---------------*/
-void Graphics::drawCircle(Mat<ARGB>& image, int x0, int y0, int r)
+void Graphics::drawCircle(Image& image, int x0, int y0, int r)
 {
 	int x = 0, y = r, p = 3 - (r << 1);  //初始点:天顶(0,r)
 	int x_step[] = { 1, 1,-1,-1 }, 
@@ -157,7 +161,7 @@ void Graphics::drawCircle(Mat<ARGB>& image, int x0, int y0, int r)
 }
 
 /*---------------- 画椭圆 ---------------*/
-void Graphics::drawEllipse(Mat<ARGB>& image, int x0, int y0, int rx, int ry)
+void Graphics::drawEllipse(Image& image, int x0, int y0, int rx, int ry)
 {
 	int64 rx2 = rx * rx, ry2 = ry * ry;
 	int x = 0, y = ry;											//初始点:天顶
@@ -187,36 +191,36 @@ void Graphics::drawEllipse(Mat<ARGB>& image, int x0, int y0, int rx, int ry)
 }
 
 /*---------------- 画网格 ----------------*/
-void Graphics::drawGrid(Mat<ARGB>& image, int sx, int sy, int ex, int ey, int dx, int dy)
+void Graphics::drawGrid(Image& image, int sx, int sy, int ex, int ey, int dx, int dy)
 {
 	if (dx > 0) {
 		for (int x = sx; x <= ex; x += dx) {
-			if (image.isOut(x, 0)) continue;
+			if (isOut(image, x, 0)) continue;
 			drawLine(image, x, sy, x, ey);
 		}
 	}
 	else {
 		for (int x = sx; x >= ex; x += dx) {
-			if (image.isOut(x, 0)) continue;
+			if (isOut(image, x, 0)) continue;
 			drawLine(image, x, sy, x, ey);
 		}
 	}
 	if (dy > 0) {
 		for (int y = sy; y <= ey; y += dy) {
-			if (image.isOut(0, y)) continue;
+			if (isOut(image, 0, y)) continue;
 			drawLine(image, sx, y, ex, y);
 		}
 	}
 	else {
 		for (int y = sy; y >= ey; y += dy) {
-			if (image.isOut(0, y)) continue;
+			if (isOut(image, 0, y)) continue;
 			drawLine(image, sx, y, ex, y);
 		}
 	}
 }
 
 /*----------------[ DRAW BEZIER CURVE ]----------------*/
-void Graphics::drawBezier(Mat<ARGB>& image, vector<vector<float>>& points, int n)
+void Graphics::drawBezier(Image& image, vector<vector<float>>& points, int n)
 {
 	vector<vector<float>> p;
 
@@ -228,7 +232,7 @@ void Graphics::drawBezier(Mat<ARGB>& image, vector<vector<float>>& points, int n
 }
 
 /*---------------- 填充 ----------------*/
-void Graphics::fillRectangle(Mat<ARGB>& image, int sx, int sy, int ex, int ey)
+void Graphics::fillRectangle(Image& image, int sx, int sy, int ex, int ey)
 {
 	if (sy > ey) std::swap(ey, sy);
 	if (sx > ex) std::swap(ex, sx);
@@ -239,7 +243,7 @@ void Graphics::fillRectangle(Mat<ARGB>& image, int sx, int sy, int ex, int ey)
 }
 
 /*---------------- FLOOD 填充 ----------------*/
-void Graphics::fillFlood(Mat<ARGB>& image, int x0, int y0)
+void Graphics::fillFlood(Image& image, int x0, int y0)
 {
 	int x_step[] = { 0, 0, 1,-1, 1, 1,-1,-1 },
 		y_step[] = { 1,-1, 0, 0, 1,-1, 1,-1 };
@@ -259,7 +263,7 @@ void Graphics::fillFlood(Mat<ARGB>& image, int x0, int y0)
 			int xt = x + x_step[i],
 				yt = y + y_step[i];
 
-			if (!image.isOut(xt, yt) && image(xt, yt) == color0) {
+			if (!isOut(image, xt, yt) && image(xt, yt) == color0) {
 				image(xt, yt) = PaintColor;
 				Q.push({ xt, yt });
 			}
@@ -274,7 +278,7 @@ struct fillPolygon_Edge {								//边表(链表)
 	fillPolygon_Edge* next = NULL;
 };
 
-void Graphics::fillPolygon(Mat<ARGB>& image, int* x, int* y, int n)
+void Graphics::fillPolygon(Image& image, int* x, int* y, int n)
 {
 	const int ETSzie = 1024;
 	fillPolygon_Edge* AET = new fillPolygon_Edge(), * ET[ETSzie];//Active-Edge Table:活动边表//Edge Table边表
@@ -323,7 +327,7 @@ void Graphics::fillPolygon(Mat<ARGB>& image, int* x, int* y, int n)
 		p = AET;
 		while (p->next && p->next->next) {				//链表遍历
 			for (int x = p->next->x; x <= p->next->next->x; x++)
-				if(!image.isOut(x, y))
+				if(!isOut(image, x, y))
 					image(x, y) = PaintColor;
 			p = p->next->next;
 		}
@@ -347,7 +351,7 @@ void Graphics::fillPolygon(Mat<ARGB>& image, int* x, int* y, int n)
 }
 
 /*---------------- 画字符 ----------------*/
-void Graphics::drawChar(Mat<ARGB>& image, int x0, int y0, char charac)
+void Graphics::drawChar(Image& image, int x0, int y0, char charac)
 {
 	static const int FontLibSize = 16;
 	int k = FontSize / FontLibSize + 1;
@@ -376,14 +380,14 @@ void Graphics::drawChar(Mat<ARGB>& image, int x0, int y0, char charac)
 	}
 }
 /*---------------- 画字符串 ----------------*/
-void Graphics::drawString(Mat<ARGB>& image, int x0, int y0, const char* str)
+void Graphics::drawString(Image& image, int x0, int y0, const char* str)
 {
 	for (int i = 0; str[i] != '\0'; i++) 
 		drawChar(image, x0, y0 + FontSize * i, str[i]);
 }
 
 /*---------------- 画数字 ----------------*/
-void Graphics::drawNum(Mat<ARGB>& image, int x0, int y0, fp64 num)
+void Graphics::drawNum(Image& image, int x0, int y0, fp64 num)
 {
 	char numstr[100];
 	int cur = 0;

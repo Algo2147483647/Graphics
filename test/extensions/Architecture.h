@@ -17,7 +17,7 @@ namespace Architecture {
 /******************************************************************************
 *                    楼梯
 ******************************************************************************/
-void Stairs_1(Mat<float>& zero, double Len, double Height,int num, GraphicsND* G) {
+void Stairs_1(Mat<float>& zero, float Len, float Height,int num, GraphicsND* G) {
 	Mat<float> p1(3), p2(3);
 	G->drawCuboid(
 		p1.getData(-Len / 2,-Len / 2, -0.1) += zero,
@@ -32,7 +32,7 @@ void Stairs_1(Mat<float>& zero, double Len, double Height,int num, GraphicsND* G
 	p1 = zero; p1[0] -= Len/4; p1[2] += Height / 2;
 	G->drawStairs(p1,   Len / 2, Len / 2, Height / 2, num);
 }
-void Stairs_2(Mat<float>& zero, double Len, double Height,int num, GraphicsND* G) {
+void Stairs_2(Mat<float>& zero, float Len, float Height,int num, GraphicsND* G) {
 	Mat<float> p1(3), p2(3);
 	G->drawCuboid(
 		p1.getData(-Len / 2,-Len / 2, -0.1) += zero,
@@ -62,7 +62,7 @@ void Wall(Mat<float>& st, Mat<float>& ed, Mat<float>& holeSt, Mat<float>& holeEd
 /******************************************************************************
 *                    栏杆
 ******************************************************************************/
-void Handrail(Mat<float>& st, Mat<float>& ed, double Height, double Delta, GraphicsND* G) {
+void Handrail(Mat<float>& st, Mat<float>& ed, float Height, float Delta, GraphicsND* G) {
 	Mat<float> p1 = st, p2 = ed, deltaP;
 	p1[2] += Height;
 	p2[2] += Height;

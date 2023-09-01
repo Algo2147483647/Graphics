@@ -13,6 +13,7 @@ public:
 	/*---------------- 基础函数 ----------------*/
 	RGB() { }
 	RGB(ARGB a) { *this = a; }			//构造函数
+	RGB(INT8U R, INT8U G, INT8U B) : R(R), G(G), B(B) { ; }			//构造函数
 
 	RGB& operator=(const RGB& a) { 
 		R = a.R; 

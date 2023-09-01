@@ -6,8 +6,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     srand(time(NULL));
 
     QSize screenSize = QSize(1600, 1000);
-    this->setMinimumSize(screenSize);
-    this->setMaximumSize(screenSize);
+    setMinimumSize(screenSize);
+    setMaximumSize(screenSize);
 
     windowPix.init(len, len / 3);
 

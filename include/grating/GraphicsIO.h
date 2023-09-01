@@ -2,8 +2,7 @@
 #define GRAPHICS_IO_H
 
 #include <vector>
-#include "Mat.h"
-#include "RGB.h"
+#include "Image.h"
 
 namespace Graphics {
 /******************************************************************************
@@ -16,28 +15,31 @@ namespace Graphics {
 		P2	Graymap	ASCII			P5	Graymap	Binary
 		P3	Pixmap	ASCII			P6	Pixmap	Binary
 ******************************************************************************/
-inline void ppmRead(const char* fileName, Mat<RGB>& image) {
+inline void ppmRead(const char* fileName, Image_RGB& image) {
 	FILE* fi = fopen(fileName, "rb");
 	int rows, cols;
 	fscanf(fi, "P6\n%d %d\n255\n", &cols, &rows);						// 读图片格式、宽高、最大像素值
-	image.alloc(rows, cols);
-	fread(image.data, 1, image.size() * 3, fi);							// 读RGB数据
+	image.resize(rows, cols);
+	fread(image.data(), 1, image.size() * 3, fi);							// 读RGB数据
 	fclose(fi);
 }
 
-inline void ppmWrite(const char* fileName, Mat<RGB>& image) {
+inline void ppmWrite(const char* fileName, const Image_RGB& image) {
 	FILE* fo = fopen(fileName, "wb");
-	fprintf(fo, "P6\n%d %d\n255\n", image.cols, image.rows);			// 写图片格式、宽高、最大像素值
-	fwrite(image.data, 1, image.size() * 3, fo);						// 写RGB数据
+	fprintf(fo, "P6\n%d %d\n255\n", image.cols(), image.rows());			// 写图片格式、宽高、最大像素值
+	fwrite(image.data(), 1, image.size() * 3, fo);						// 写RGB数据
 	fclose(fo);
 }
 
-inline void ppmWrite(const char* fileName, Mat<ARGB>& image) {
-	Mat<RGB> imgT(image.rows, image.cols);
-	for (int i = 0; i < image.size(); i++) {
-		imgT(i).B = (unsigned char) image(i);
-		imgT(i).G = (unsigned char)(image(i) >> 8);
-		imgT(i).R = (unsigned char)(image(i) >>16);
+inline void ppmWrite(const char* fileName, const Image& image) {
+	Image_RGB imgT(image.rows(), image.cols());
+
+	for (int i = 0; i < image.rows(); ++i) {
+		for (int j = 0; j < image.cols(); ++j) {
+			imgT(i, j).B = static_cast<unsigned char>(image(i, j));
+			imgT(i, j).G = static_cast<unsigned char>(image(i, j) >> 8);
+			imgT(i, j).R = static_cast<unsigned char>(image(i, j) >>16);
+		}
 	}
 
 	ppmWrite(fileName, imgT);
@@ -45,17 +47,17 @@ inline void ppmWrite(const char* fileName, Mat<ARGB>& image) {
 
 inline void ppmWrite(const char* fileName, Mat<unsigned char>& image) {
 	FILE* fo = fopen(fileName, "wb");
-	fprintf(fo, "P5\n%d %d\n255\n", image.cols, image.rows);			// 写图片格式、宽高、最大像素值
-	fwrite(image.data, 1, image.size(), fo);							// 写RGB数据
+	fprintf(fo, "P5\n%d %d\n255\n", image.cols(), image.rows());			// 写图片格式、宽高、最大像素值
+	fwrite(image.data(), 1, image.size(), fo);							// 写RGB数据
 	fclose(fo);
 }
-
+/*
 inline void ppmWrite(const char* fileName, Mat<double>& image) {
-	Mat<unsigned char> t(image.rows, image.cols);
+	Mat<unsigned char> t(image.rows(), image.cols());
 	for (int i = 0; i < image.size(); i++) 
 		t[i] = image[i] * 0xFF;
 	ppmWrite(fileName, t);
-}
+}*/
 
 /******************************************************************************
 *					.STL 文件编码/解码
@@ -69,6 +71,7 @@ inline void ppmWrite(const char* fileName, Mat<double>& image) {
 			[3.4] 顶点3 (3x4B)
 			[3.5] 属性	(2B)
 ******************************************************************************/
+/*
 inline void stlRead(const char* fileName, Mat<float>& faceVec, Mat<float>& p1, Mat<float>& p2, Mat<float>& p3, Mat<short>& attribute) {
 	FILE* fi = fopen(fileName, "rb");
 	unsigned char head[80];
@@ -86,7 +89,7 @@ inline void stlRead(const char* fileName, Mat<float>& faceVec, Mat<float>& p1, M
 
 	for (int i = 0; i < N; i++) {
 		fread(p, 12 * 4, 1, fi);
-		fread(attribute.data + i, 2, 1, fi);
+		fread(attribute.data() + i, 2, 1, fi);
 		faceVec	(0, i) = p[0];
 		faceVec	(1, i) = p[1];
 		faceVec	(2, i) = p[2];
@@ -114,7 +117,7 @@ inline void stlWrite(
 	Mat<short>& attribute
 ) {
 	FILE* fo = fopen(fileName, "wb");
-	unsigned int  N = p1.cols;
+	unsigned int  N = p1.cols();
 	fwrite(head, 80, 1, fo);
 	fwrite(&N,    4, 1, fo);
 
@@ -133,7 +136,7 @@ inline void stlWrite(
 		fwrite(&p3(1, i), 4, 1, fo);
 		fwrite(&p3(2, i), 4, 1, fo);
 
-		fwrite(attribute.data + i, 2, 1, fo);
+		fwrite(attribute.data() + i, 2, 1, fo);
 	}
 	fclose(fo);
 }

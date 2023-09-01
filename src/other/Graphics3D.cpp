@@ -1,8 +1,12 @@
 #include "Graphics3D.h"
 
-bool Graphics::drawPoint (Mat<ARGB>& image, Mat<int>& Z_buf, int x, int y, int z) 
+inline bool isOut(Image& image, int x0, int y0) {
+    return x0 < 0 || x0 >= image.cols() || y0 < 0 || y0 >= image.rows();
+}
+
+bool Graphics::drawPoint (Image& image, Mat<int>& Z_buf, int x, int y, int z) 
 {
-    if (image.isOut(x, y) || z <= Z_buf(x, y))
+    if (isOut(image, x, y) || z <= Z_buf(x, y))
         return false;
 
     image(x, y) = PaintColor;
@@ -11,9 +15,9 @@ bool Graphics::drawPoint (Mat<ARGB>& image, Mat<int>& Z_buf, int x, int y, int z
     return true;
 }
 
-bool Graphics::drawPoint(Mat<ARGB>& image, Mat<int>& Z_buf, int x, int y, int z, double nx, double ny, double nz)
+bool Graphics::drawPoint(Image& image, Mat<int>& Z_buf, int x, int y, int z, double nx, double ny, double nz)
 {
-    if (image.isOut(x, y) || z <= Z_buf(x, y))
+    if (isOut(image, x, y) || z <= Z_buf(x, y))
         return false;
 
     double a = Illumination::Phong(nx, ny, nz);
@@ -24,7 +28,7 @@ bool Graphics::drawPoint(Mat<ARGB>& image, Mat<int>& Z_buf, int x, int y, int z,
     return true;
 }
 
-void Graphics::drawLine (Mat<ARGB>& image, Mat<int>& Z_buf, 
+void Graphics::drawLine (Image& image, Mat<int>& Z_buf, 
     int sx, int ex, 
     int sy, int ey, 
     int sz, int ez
@@ -53,7 +57,7 @@ void Graphics::drawLine (Mat<ARGB>& image, Mat<int>& Z_buf,
 	}
 }
 
-void Graphics::drawLine(Mat<ARGB>& image, Mat<int>& Z_buf, vector<vector<int>>& p, bool close) {
+void Graphics::drawLine(Image& image, Mat<int>& Z_buf, vector<vector<int>>& p, bool close) {
     int n = p.size();
 
 	for (int i = 0; i < n - 1; i++) 
@@ -71,7 +75,7 @@ void Graphics::drawLine(Mat<ARGB>& image, Mat<int>& Z_buf, vector<vector<int>>& 
         );
 }
 
-void Graphics::drawTriangle(Mat<ARGB>& image, Mat<int>& Z_buf, vector<int>& p1, vector<int>& p2, vector<int>& p3) {
+void Graphics::drawTriangle(Image& image, Mat<int>& Z_buf, vector<int>& p1, vector<int>& p2, vector<int>& p3) {
     vector<int>* q[3] = { &p1, &p2, &p3 };
 
     if ((*q[0])[1] > (*q[1])[1]) swap(q[0], q[1]);
@@ -159,7 +163,7 @@ void Graphics::drawTriangle(Mat<ARGB>& image, Mat<int>& Z_buf, vector<int>& p1, 
 }
 
 
-void Graphics::drawTriangle(Mat<ARGB>& image, Mat<int>& Z_buf, vector<double>& p1, vector<double>& p2, vector<double>& p3) {
+void Graphics::drawTriangle(Image& image, Mat<int>& Z_buf, vector<double>& p1, vector<double>& p2, vector<double>& p3) {
     vector<int> pi1(3), pi2(3), pi3(3);
 
     pi1 = { (int)p1[0], (int)p1[1], (int)p1[2] };
@@ -251,7 +255,7 @@ void Graphics::drawTriangle(Mat<ARGB>& image, Mat<int>& Z_buf, vector<double>& p
     PaintColor = color;
 }
 
-void Graphics::drawSphere(Mat<ARGB>& image, Mat<int>& Z_buf, int x0, int y0, int z0, int r)
+void Graphics::drawSphere(Image& image, Mat<int>& Z_buf, int x0, int y0, int z0, int r)
 {
     int x_step[] = { 1, 0, 1, 1, 0, 1 },
         y_step[] = { 0, 1, 1, 0, 1, 1 },
@@ -313,7 +317,7 @@ void Graphics::drawSphere(Mat<ARGB>& image, Mat<int>& Z_buf, int x0, int y0, int
 }
 
 
-void Graphics::drawFunction(Mat<ARGB>& image, Mat<int>& Z_buf, int xs, int ys, int zs, 
+void Graphics::drawFunction(Image& image, Mat<int>& Z_buf, int xs, int ys, int zs, 
     function<double(double, double, double)> f, 
     function<void(double, double, double, double&, double&, double&)> df)
 {

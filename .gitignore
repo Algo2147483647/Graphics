@@ -1,5 +1,6 @@
 ./a.bat
 .vs/
+thirdparty/eigen/
 
 # CMake generated
 CMakeCache.txt

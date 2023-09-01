@@ -1,9 +1,7 @@
 #ifndef IMAGE_PROCESSING_BASIC_OPERATE_H
 #define IMAGE_PROCESSING_BASIC_OPERATE_H
 
-#include "Matrix.h"
-
-using namespace Matrix;
+#include "Image.h"
 
 /************************************************
 *

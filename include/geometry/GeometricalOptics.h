@@ -1,50 +1,45 @@
 #ifndef GEOMETERICAL_OPTICS_H
 #define GEOMETERICAL_OPTICS_H
 
-#include "Matrix.h"
-using namespace Matrix;
-
-#define PI 3.141592653589
-#define RAND_DBL (rand() / double(RAND_MAX))
+#include <Eigen/Dense>
+#include <random>
+#include <corecrt_math_defines.h>
+using namespace Eigen;
 
 namespace GeometricalOptics {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<> dis(0, 1);
 
 	/*---- 反射 ----*/
-	inline Mat<float>& reflect(Mat<float>& RayI, Mat<float>& faceVec, Mat<float>& RayO) {
-		mul(RayO, -2 * dot(faceVec, RayI), faceVec);
-		add(RayO, RayO, RayI);
-		return normalize(RayO);
+	inline Vector3f reflect(const Vector3f& RayI, const Vector3f& faceVec) {
+		return (RayI - 2 * faceVec.dot(RayI) * faceVec).normalized();
 	}
 
 	/*---- 折射 ----*/
-	inline Mat<float>& refract(Mat<float>& RayI, Mat<float>& faceVec, Mat<float>& RayO, double rateI, double rateO) {
-		double k = rateI / rateO,
-			CosI = dot(faceVec, RayI),
-			CosO = 1 - pow(k, 2) * (1 - pow(CosI, 2));
+	inline Vector3f refract(const Vector3f& RayI, const Vector3f& faceVec, double rateI, double rateO) {
+		double k = rateI / rateO;
+		double CosI = faceVec.dot(RayI);
+		double CosO = 1 - k * k * (1 - CosI * CosI);
 
-		if (CosO < 0)				//全反射
-			return reflect(RayI, faceVec, RayO);
+		if (CosO < 0)		// Total reflection
+			return reflect(RayI, faceVec);
 
-		mul(RayO, -CosI - (CosI > 0 ? -1 : 1) * sqrt(CosO) / k, faceVec);
-		add(RayO, RayO, RayI);
-		return normalize(RayO);
+		return (k * RayI + (k * CosI - std::sqrt(CosO)) * faceVec).normalized();
 	}
 
 	/*---- 漫反射 ----*/
-	inline Mat<float>& diffuseReflect(Mat<float>& RayI, Mat<float>& faceVec, Mat<float>& RayO) {
-		double r1 = 2 * PI * RAND_DBL, r2 = RAND_DBL;
-		static Mat<float> t(3), u, v;
+	inline Vector3f diffuseReflect(const Vector3f& RayI, const Vector3f& faceVec) {
+		double r1 = 2 * M_PI * dis(gen), r2 = dis(gen);
+		Vector3f t = Vector3f::UnitX();
 
-		mul(faceVec, dot(faceVec, RayI) > 0 ? -1 : 1, faceVec);
-		t[0] = fabs(faceVec[0]) > 0.1 ? 0 : 1;
-		t[1] = t[0] == 0 ? 1 : 0;
+		if (std::abs(faceVec[0]) > 0.1)
+			t = Vector3f::UnitY();
 
-		mul(u, cos(r1) * sqrt(r2), normalize(cross_(u, t, faceVec)));
-		mul(v, sin(r1) * sqrt(r2), normalize(cross_(v, faceVec, u)));
+		Vector3f u = (cos(r1) * sqrt(r2) * (t.cross(faceVec)).normalized()).eval();
+		Vector3f v = (sin(r1) * sqrt(r2) * (faceVec.cross(u)).normalized()).eval();
 
-		mul(RayO, sqrt(1 - r2), faceVec);
-		add(RayO, RayO, add(u, u, v));
-		return normalize(RayO);
+		return (sqrt(1 - r2) * faceVec + u + v).normalized();
 	}
 
 	/*---- 雾 (均匀同质) ----*/
@@ -53,13 +48,9 @@ namespace GeometricalOptics {
 		return I * t + A * (1 - t);
 	}
 
-	inline Mat<float>& Haze(Mat<float>& I, Mat<float>& O, Mat<float>& A, double dis, double beta) {
-		static Mat<float> tmp(3);
+	inline Vector3f Haze(const Vector3f& I, const Vector3f& A, double dis, double beta) {
 		double t = exp(-beta * dis);
-
-		mul(O, t, I);
-		add(O, O, mul(tmp, 1 - t, A));
-		return O;
+		return t * I + (1 - t) * A;
 	}
 }
 
