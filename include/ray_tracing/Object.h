@@ -41,7 +41,7 @@ namespace RayTracing {
 
 		void computeBoundingBox() {
 			boundbox = new Cuboid;
-			obj->shape->boundingBox(boundbox->pmin, boundbox->pmax);
+			obj->shape->boundingBox(boundbox->pmax, boundbox->pmin);
 		}
 	};
 
@@ -76,7 +76,7 @@ namespace RayTracing {
 				node = &ObjectNodeSet[l];
 				return;
 			}
-
+			
 			node = new ObjectNode(nullptr);
 			Vector3f pmin = ObjectNodeSet[l].boundbox->pmin;
 			Vector3f pmax = ObjectNodeSet[l].boundbox->pmax;

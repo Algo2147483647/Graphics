@@ -52,6 +52,9 @@ public:
     Vector3f center;
     float R;
 
+    Sphere() { ; }
+    Sphere(Vector3f center, float R) : center(center), R(R) {; }
+
     float intersect(const Vector3f& raySt, const Vector3f& ray) override {
         Vector3f rayStCenter = raySt - center;
 

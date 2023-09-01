@@ -15,23 +15,17 @@ inline void RayTracingTest() {
 		material->baseColor = { 10, 10, 0 };
 		material->rediate = 1;
 
-		Sphere* shape = new Sphere;
-		shape->center = { 900, 500, 500 };
-		shape->R = 300;
-
+		Sphere* shape = new Sphere({ 900, 500, 500 }, 300);
 		objTree.addObj(shape, material);
 	}
 
-	{/*
+	{
 		Material* material  = new Material;
 		material->baseColor = { 1, 0, 0 };
 		material->rediate = 1;
 
-		Sphere* shape = new Sphere;
-		shape->center = { 1000, 0, 1000 };
-		shape->R = 20;
-
-		objTree.addObj(shape, material);*/
+		Sphere* shape = new Sphere({ 1000, 100, 100 }, 200);
+		objTree.addObj(shape, material);
 	}
 
 	objTree.build();
