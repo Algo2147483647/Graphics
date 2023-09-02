@@ -17,15 +17,14 @@ namespace GeometricalOptics {
 	}
 
 	/*---- 折射 ----*/
-	inline Vector3f refract(const Vector3f& RayI, const Vector3f& faceVec, double rateI, double rateO) {
-		double k = rateI / rateO;
+	inline Vector3f refract(const Vector3f& RayI, const Vector3f& faceVec, double rateI_O) {  // rateI_O = rateI / rateO
 		double CosI = faceVec.dot(RayI);
-		double CosO = 1 - k * k * (1 - CosI * CosI);
+		double CosO = 1 - rateI_O * rateI_O * (1 - CosI * CosI);
 
 		if (CosO < 0)		// Total reflection
 			return reflect(RayI, faceVec);
 
-		return (k * RayI + (k * CosI - std::sqrt(CosO)) * faceVec).normalized();
+		return (rateI_O * RayI + (rateI_O * CosI - std::sqrt(CosO)) * faceVec).normalized();
 	}
 
 	/*---- 漫反射 ----*/

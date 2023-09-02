@@ -1,7 +1,6 @@
 ﻿#ifndef RAY_TRACING_H
 #define RAY_TRACING_H
 
-#include <time.h>
 #include <vector>
 #include <algorithm>
 #include <thread>
@@ -24,35 +23,8 @@ namespace RayTracing {
 	static int maxRayLevel = 6;
 	static mutex _mutex;
 	static Image imgXY, imgYZ;
+	static int threadNum = 20;
 
-	/*--------------------------------[ 渲染 ]--------------------------------
-	*	[过程]:
-			[1] 计算屏幕矢量、屏幕X,Y向轴
-			[2] 对屏幕每个像素遍历
-				[3] 计算像素矢量、光线矢量、光线追踪起点
-				[4] 光线追踪算法
-				[5] 基于结果绘制该像素色彩
-	-------------------------------------------------------------------------*/
-	class Camera {
-	public:
-		float width;
-		float height;
-		Vector3f center;
-		Vector3f direct;
-		Vector3f ScreenXVec;
-		Vector3f ScreenYVec;
-
-		Camera(float w, float h, Vector3f& c, Vector3f& d) :
-			width(w), height(h), center(c), direct(d) {
-			computeCamera();
-		}
-
-		void computeCamera() {
-			ScreenYVec = Vector3f(-direct(1), direct(0), 0).normalized();
-			ScreenXVec = direct.cross(ScreenYVec)
-			                   .normalized();
-		}
-	};
 
 	/******************************************************************************
 	*						追踪光线
@@ -64,76 +36,79 @@ namespace RayTracing {
 				计算三角形反射方向，将反射光线为基准重新计算
 	&	[注]:distance > 1而不是> 0，是因为反射光线在接触面的精度内，来回碰自己....
 	******************************************************************************/
-	inline Vector3f& traceRay(const ObjectTree& objTree, Vector3f& raySt, Vector3f& ray, Vector3f& color, int level) {
+	inline Vector3f& traceRay(const ObjectTree& objTree, Ray& ray, int level) {
 		if (level > maxRayLevel) {
-			return color = Vector3f(0, 0, 0);
+			return ray.color = Vector3f(0, 0, 0);
 		}
 
 		Object* obj;
-		float dis = objTree.seekIntersection(raySt, ray, obj);
+		float dis = objTree.seekIntersection(ray.origin, ray.direct, obj);
 		if (dis == FLT_MAX) {
-			return color = Vector3f(0, 0, 0);
+			return ray.color = Vector3f(0, 0, 0);
 		}
 
-		Vector3f raySt0 = raySt;
-		raySt += dis * ray;
+		Vector3f raySt0 = ray.origin;
+		ray.origin += dis * ray.direct;
 		
 		Material* material = obj->material;
 		if (material->rediate) {
-			{
+			if (0) {
 				unique_lock<mutex> lock(_mutex);
-				Graphics::drawLine(imgXY, raySt0[0], raySt0[1], raySt[0], raySt[1]);
-				Graphics::drawLine(imgYZ, raySt0[1], raySt0[2], raySt[1], raySt[2]);
+				Graphics::drawLine(imgXY, raySt0[0], raySt0[1], ray.origin[0], ray.origin[1]);
+				Graphics::drawLine(imgYZ, raySt0[1], raySt0[2], ray.origin[1], ray.origin[2]);
 			}
-			return color = color.cwiseProduct(material->baseColor);
+			return ray.color = ray.color.cwiseProduct(material->baseColor);
 		}
 
 		thread_local Vector3f faceVec;
-		obj->shape->faceVector(raySt, faceVec);
-		material->func(ray, faceVec, color, ray);
+		obj->shape->faceVector(ray.origin, faceVec);
+		material->func(ray, faceVec, ray.color, ray.direct);
 		
-		traceRay(objTree, raySt, ray, color, level + 1);
-		return color;
+		traceRay(objTree, ray, level + 1);
+		return ray.color;
 	}
 
 	 
 	inline void traceRay_thread(const Camera& camera, const ObjectTree& objTree, vector<MatrixXf>& img, int xSt, int xEd, int ySt, int yEd) {
 
 		thread_local Vector3f sampleVec;
-		thread_local Vector3f ray, raySt;
-		thread_local Vector3f color;
+		thread_local Ray ray;
 		
 		for (int y = ySt; y < yEd; y++) {
 			for (int x = xSt; x < xEd; x++) {
 				sampleVec = (x - img[0].rows() / 2.0 - 0.5) * camera.ScreenXVec +
 					        (y - img[0].cols() / 2.0 - 0.5) * camera.ScreenYVec;
-				raySt = camera.center + sampleVec;
-				ray   = camera.direct + sampleVec;
-				ray.normalize();
-				color = Vector3f::Ones();
+				ray.origin =  camera.center + sampleVec;
+				ray.direct = (camera.direct + sampleVec).normalized();
+				ray.color = Vector3f::Ones();
 
-				traceRay(objTree, raySt, ray, color, 0);
+				traceRay(objTree, ray, 0);
 
 				{
 					unique_lock<mutex> lock(_mutex);
 					for (int c = 0; c < 3; c++) 
-						img[c](x, y) += color[c];
+						img[c](x, y) += ray.color[c];
 				}
 			}
 		}
 	}
 
 	inline void traceRay(const Camera& camera, const ObjectTree& objTree, vector<MatrixXf>& img, int sampleSt, int sampleEd) {
-		int threadNum = 16;
 		int threadSize = img[0].rows() / threadNum;
 		ThreadPool pool(threadNum);
+		vector<future<void>> futures;
 		
 		for (int sample = sampleSt; sample < sampleEd; sample++) {
 			for (int i = 0; i < threadNum; i++) {
-				pool.enqueue([&, i] {
+				futures.push_back(pool.enqueue([&, i] {
 					traceRay_thread(camera, objTree, img, i * threadSize, (i + 1) * threadSize, 0, img[0].cols());
-				});
+				}));
 			}
+		}
+
+		// Wait for all tasks to complete
+		for (auto& future : futures) {
+			future.wait();
 		}
 
 		for(int i = 0; i < 3; i++) {

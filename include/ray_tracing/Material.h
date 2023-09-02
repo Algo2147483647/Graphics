@@ -4,48 +4,49 @@
 #include <vector>
 #include <Eigen/Dense>
 #include "GeometricalOptics.h"
+#include "Ray.h"
 
 using namespace Eigen;
 using namespace GeometricalOptics;
 
-#define RAND_DBL (rand() / float(RAND_MAX))
+namespace RayTracing {
+	struct Material {
+		Vector3f baseColor;
 
-struct Material {
-	Vector3f baseColor;
+		Vector3f refractivity;
 
-	Vector3f refractRate;
+		bool rediate = false;
+		bool quickReflect;
+		float diffuseReflectProbability = 0;
+		float reflectProbability = 1;
+		float refractProbability = 0;
 
-	bool rediate = false;
-	bool quickReflect;
-	float diffuseReflectProbability = 0;
-	float reflectProbability = 1;
-	float refractProbability = 0;
-
-	// Reflectivity & refractivity loss rates
-	float diffuseReflectLossRate = 1;
-	float reflectLossRate = 1;
-	float refractLossRate = 1;
+		// Reflectivity & refractivity loss rates
+		float diffuseReflectLossRate = 1;
+		float reflectLoss = 1;
+		float refractLoss = 1;
 
 
-	Vector3f& func(const Vector3f& ray, const Vector3f& norm, Vector3f& color, Vector3f& res) {
-		float randnum = RAND_DBL;
+		Vector3f& func(Ray& ray, const Vector3f& norm, Vector3f& color, Vector3f& res) {
+			float randnum = GeometricalOptics::dis(gen);
 
-		if (randnum < diffuseReflectProbability) {
-			res = diffuseReflect(ray, norm);
-			color *= diffuseReflectLossRate;
+			if (randnum < diffuseReflectProbability) {
+				res = diffuseReflect(ray.direct, norm);
+				color *= diffuseReflectLossRate;
+			}
+			else if (randnum < reflectProbability + diffuseReflectProbability) {
+				res = reflect(ray.direct, norm);
+				color *= reflectLoss;
+			}
+			else {
+				ray.refractivity = (ray.refractivity == 1.0) ? refractivity[0] : 1.0 / refractivity[0];
+				res = refract(ray.direct, norm, ray.refractivity);
+				color *= refractLoss;
+			}
+
+			color = color.cwiseProduct(baseColor);
+			return res;
 		}
-		else if (randnum < reflectProbability + diffuseReflectProbability) {
-			res = reflect(ray, norm);
-			color *= reflectLossRate;
-		}
-		else {
-			res = refract(ray, norm, 1, 1);
-			color *= refractLossRate;
-		}
-
-		color = color.cwiseProduct(baseColor);
-		return res;
-	}
-};
-
+	};
+}
 #endif
