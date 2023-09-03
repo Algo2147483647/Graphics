@@ -10,9 +10,6 @@
 
 using namespace Eigen;
 
-#define PI 3.141592653589
-#define EPS 10e-4
-
 /*#############################################################################
 *
 *						光线追踪  Ray Tracing
@@ -24,6 +21,7 @@ namespace RayTracing {
 	static mutex _mutex;
 	static Image imgXY, imgYZ;
 	static int threadNum = 20;
+	static bool is_debug = 0;
 
 
 	/******************************************************************************
@@ -47,23 +45,28 @@ namespace RayTracing {
 			return ray.color = Vector3f(0, 0, 0);
 		}
 
-		Vector3f raySt0 = ray.origin;
-		ray.origin += dis * ray.direct;
+		if (is_debug) {
+			thread_local Vector3f rayStNew = ray.origin + dis * ray.direct;
+			unique_lock<mutex> lock(_mutex);
+			Graphics::drawLine(imgXY, rayStNew[0], rayStNew[1], ray.origin[0], ray.origin[1]);
+			Graphics::drawLine(imgYZ, rayStNew[1], rayStNew[2], ray.origin[1], ray.origin[2]);
+		}
 		
 		Material* material = obj->material;
 		if (material->rediate) {
-			if (0) {
-				unique_lock<mutex> lock(_mutex);
-				Graphics::drawLine(imgXY, raySt0[0], raySt0[1], ray.origin[0], ray.origin[1]);
-				Graphics::drawLine(imgYZ, raySt0[1], raySt0[2], ray.origin[1], ray.origin[2]);
-			}
 			return ray.color = ray.color.cwiseProduct(material->baseColor);
 		}
 
+		ray.origin += dis * ray.direct;
 		thread_local Vector3f faceVec;
-		obj->shape->faceVector(ray.origin, faceVec);
-		material->func(ray, faceVec, ray.color, ray.direct);
+		{
+			obj->shape->faceVector(ray.origin, faceVec);
+			if (faceVec.dot(ray.direct) > 0) {
+				faceVec *= -1;
+			}
+		}
 		
+		material->func(ray, faceVec, ray.color, ray.direct);
 		traceRay(objTree, ray, level + 1);
 		return ray.color;
 	}
@@ -118,8 +121,8 @@ namespace RayTracing {
 
 	void debug(const Camera& camera, const ObjectTree& objTree) {
 		Graphics::PaintSize = 1;
-		imgXY = Image(1000, 1000);
-		imgYZ = Image(1000, 1000);
+		imgXY = Image(3000, 3000);
+		imgYZ = Image(3000, 3000);
 		imgXY.setZero();
 		imgYZ.setZero();
 

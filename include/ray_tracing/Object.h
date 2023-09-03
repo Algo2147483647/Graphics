@@ -51,7 +51,7 @@ namespace RayTracing {
 		vector<Object> ObjectSet;
 		vector<ObjectNode> ObjectNodeSet;
 
-		Object& addObj(Shape* shape, Material* material = nullptr) {
+		Object& add(Shape* shape, Material* material = nullptr) {
 			Object obj;
 
 			obj.shape = shape;

@@ -22,9 +22,12 @@ namespace RayTracing {
 		float refractProbability = 0;
 
 		// Reflectivity & refractivity loss rates
-		float diffuseReflectLossRate = 1;
+		float diffuseReflectLoss = 1;
 		float reflectLoss = 1;
 		float refractLoss = 1;
+
+		Material() { ; }
+		Material(Vector3f baseColor) : baseColor(baseColor) { ; }
 
 
 		Vector3f& func(Ray& ray, const Vector3f& norm, Vector3f& color, Vector3f& res) {
@@ -32,7 +35,7 @@ namespace RayTracing {
 
 			if (randnum < diffuseReflectProbability) {
 				res = diffuseReflect(ray.direct, norm);
-				color *= diffuseReflectLossRate;
+				color *= diffuseReflectLoss;
 			}
 			else if (randnum < reflectProbability + diffuseReflectProbability) {
 				res = reflect(ray.direct, norm);

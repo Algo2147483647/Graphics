@@ -151,6 +151,9 @@ class Cuboid : public Shape {
 public:
     Vector3f pmin, pmax;
 
+    Cuboid() { ; }
+    Cuboid(Vector3f pmin, Vector3f pmax) : pmin(pmin), pmax(pmax) { ; }
+
     float intersect(const Vector3f& raySt, const Vector3f& ray) override {
         float t0 = -FLT_MAX, t1 = FLT_MAX;
 
@@ -174,6 +177,16 @@ public:
     }
 
     Vector3f& faceVector(const Vector3f& intersect, Vector3f& res) override {
+        if (fabs(intersect[0] - pmin[0]) < EPS || 
+            fabs(intersect[0] - pmax[0]) < EPS)
+            res = { 1, 0, 0 };
+        else if (fabs(intersect[1] - pmin[1]) < EPS || 
+                 fabs(intersect[1] - pmax[1]) < EPS)
+            res = { 0, 1, 0 };
+        else if (fabs(intersect[2] - pmin[2]) < EPS || 
+                 fabs(intersect[2] - pmax[2]) < EPS)
+            res = { 0, 0, 1 };
+
         return res;
     }
 
@@ -183,7 +196,7 @@ public:
     }
 
     void paint(Image& imgXY, Image& imgYZ) override {
-        Graphics::drawRectangle(imgXY, pmin[0], pmin[1], pmax[0], pmax[0]);
+        Graphics::drawRectangle(imgXY, pmin[0], pmin[1], pmax[0], pmax[1]);
         Graphics::drawRectangle(imgYZ, pmin[1], pmin[2], pmax[1], pmax[2]);
     }
 };
