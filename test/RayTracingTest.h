@@ -7,6 +7,7 @@ using namespace RayTracing;
 using namespace Graphics;
 
 
+
 inline void modeling(ObjectTree& objTree) {
 	Material* material;
 	{
@@ -19,7 +20,7 @@ inline void modeling(ObjectTree& objTree) {
 		objTree.add(new Cuboid({ 850, 1320, 0 }, { 1150, 1350, 300 }), material);
 		objTree.add(new Cuboid({ 850, 900, 0 }, { 1150, 930, 300 }), material);
 		objTree.add(new Cuboid({ 850, 850, 300 }, { 1150, 1400, 330 }), material);
-
+		objTree.add("C:/Algo/projects/graphics/assets/teapot.stl", { 1000, 1000, 331 }, 20, material);
 	}
 	{
 		material = new Material({ 1, 1, 0 });
@@ -44,7 +45,7 @@ inline void modeling(ObjectTree& objTree) {
 		material->reflectProbability = 0;
 		material->refractivity[0] = 1.7;
 
-		objTree.add(new Sphere({ 1000, 1000, 500 }, 100), material);
+		objTree.add(new Sphere({ 1000, 1000, 900 }, 100), material);
 	}
 	{
 		material = new Material({ 1, 0, 0 });
@@ -79,7 +80,7 @@ inline void RayTracingTest() {
 	RayTracing::debug(camera, objTree);
 
 	auto start = std::chrono::high_resolution_clock::now();
-	RayTracing::traceRay(camera, objTree, img, 0, 12000);
+	RayTracing::traceRay(camera, objTree, img, 0, 200);
 	auto stop = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
 	std::cout << "Time taken by traceRay: " << duration.count() << " milliseconds" << std::endl;

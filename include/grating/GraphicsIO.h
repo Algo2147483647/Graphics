@@ -51,13 +51,13 @@ inline void ppmWrite(const char* fileName, Mat<unsigned char>& image) {
 	fwrite(image.data(), 1, image.size(), fo);							// 写RGB数据
 	fclose(fo);
 }
-/*
-inline void ppmWrite(const char* fileName, Mat<double>& image) {
+
+inline void ppmWrite(const char* fileName, Mat<float>& image) {
 	Mat<unsigned char> t(image.rows(), image.cols());
 	for (int i = 0; i < image.size(); i++) 
-		t[i] = image[i] * 0xFF;
+		t(i) = image(i) * 0xFF;
 	ppmWrite(fileName, t);
-}*/
+}
 
 /******************************************************************************
 *					.STL 文件编码/解码
@@ -71,22 +71,22 @@ inline void ppmWrite(const char* fileName, Mat<double>& image) {
 			[3.4] 顶点3 (3x4B)
 			[3.5] 属性	(2B)
 ******************************************************************************/
-/*
-inline void stlRead(const char* fileName, Mat<float>& faceVec, Mat<float>& p1, Mat<float>& p2, Mat<float>& p3, Mat<short>& attribute) {
+
+inline void stlRead(const char* fileName, Mat<float>& faceVec, Mat<float>& p1, Mat<float>& p2, Mat<float>& p3, vector<short>& attribute) {
 	FILE* fi = fopen(fileName, "rb");
 	unsigned char head[80];
 	unsigned int  N; 
 	float p[12];
-
+	
 	fread(head, 80, 1, fi);
 	fread(&N,    4, 1, fi);
-
-	faceVec.alloc(3, N);
-	p1.alloc(3, N);
-	p2.alloc(3, N);
-	p3.alloc(3, N);
-	attribute.alloc(N);
-
+	
+	faceVec.resize(3, N);
+	p1.resize(3, N);
+	p2.resize(3, N);
+	p3.resize(3, N);
+	attribute.resize(N);
+	
 	for (int i = 0; i < N; i++) {
 		fread(p, 12 * 4, 1, fi);
 		fread(attribute.data() + i, 2, 1, fi);
@@ -114,7 +114,7 @@ inline void stlWrite(
 	Mat<float>& p1, 
 	Mat<float>& p2, 
 	Mat<float>& p3, 
-	Mat<short>& attribute
+	vector<short>& attribute
 ) {
 	FILE* fo = fopen(fileName, "wb");
 	unsigned int  N = p1.cols();
@@ -140,8 +140,8 @@ inline void stlWrite(
 	}
 	fclose(fo);
 }
-/*
-inline void stlWrite(const char* fileName, vector<vector<double>>& triangleSet) {
+
+inline void stlWrite(const char* fileName, vector<vector<float>>& triangleSet) {
 	int n = triangleSet.size();
 	char head[80];
 	Mat<float>
@@ -149,8 +149,7 @@ inline void stlWrite(const char* fileName, vector<vector<double>>& triangleSet) 
 		p1(3, n),
 		p2(3, n),
 		p3(3, n);
-	Mat<short>
-		attribute(n);
+	vector<short> attribute(n);
 
 	for (int i = 0; i < n; i++) {
 		p1(0, i) = triangleSet[i][0];
@@ -165,7 +164,7 @@ inline void stlWrite(const char* fileName, vector<vector<double>>& triangleSet) 
 	}
 
 	stlWrite(fileName, head, faceVec, p1, p2, p3, attribute);
-}*/
+}
 
 }
 #endif

@@ -7,6 +7,7 @@
 #include <Eigen/Dense>
 #include "Material.h"
 #include "Shape.h"
+#include "GraphicsIO.h"
 
 using namespace Eigen;
 using namespace std;
@@ -51,7 +52,7 @@ namespace RayTracing {
 		vector<Object> ObjectSet;
 		vector<ObjectNode> ObjectNodeSet;
 
-		Object& add(Shape* shape, Material* material = nullptr) {
+		inline Object& add(Shape* shape, Material* material = nullptr) {
 			Object obj;
 
 			obj.shape = shape;
@@ -59,6 +60,20 @@ namespace RayTracing {
 
 			ObjectSet.push_back(obj);
 			return ObjectSet.back();
+		}
+
+		inline Object& add(const char* file, Vector3f center, double size, Material* material) {
+			Mat<float> p0, p1, p2, p3;
+			Vector3f p4, p5, p6;
+			vector<short> a;
+			Graphics::stlRead(file, p0, p1, p2, p3, a);
+
+			for (int i = 0; i < p0.cols(); i++) {
+				p4 = Vector3f(p1(0, i), p1(1, i), p1(2, i)) * size + center;
+				p5 = Vector3f(p2(0, i), p2(1, i), p2(2, i)) * size + center;
+				p6 = Vector3f(p3(0, i), p3(1, i), p3(2, i)) * size + center;
+				add(new Triangle(p4, p5, p6), material);
+			}
 		}
 
 		/*--------------------------------[ 建树 ]--------------------------------*/
