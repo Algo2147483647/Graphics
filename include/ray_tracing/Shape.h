@@ -15,6 +15,11 @@ constexpr float EPS = 10e-4;
 // Base Shape class
 class Shape {
 public:
+    std::function<bool(Vector3f&)> engraving = nullptr;
+
+    Shape() { ; }
+    Shape(std::function<bool(Vector3f&)> engraving) : engraving(engraving) { ; }
+
     virtual float intersect(const Vector3f& raySt, const Vector3f& ray) = 0;  // Pure virtual function
     virtual Vector3f& faceVector(const Vector3f& intersect, Vector3f& res) = 0;
     virtual void boundingBox(Vector3f& pmax, Vector3f& pmin) = 0;
@@ -50,13 +55,15 @@ public:
 class Sphere : public Shape {
 public:
     Vector3f center;
-    float R;
+    float R = 0;
 
     Sphere() { ; }
     Sphere(Vector3f center, float R) : center(center), R(R) {; }
+    Sphere(Vector3f center, float R, std::function<bool(Vector3f&)> engraving) : center(center), R(R), Shape(engraving){; }
 
     float intersect(const Vector3f& raySt, const Vector3f& ray) override {
-        Vector3f rayStCenter = raySt - center;
+        thread_local Vector3f rayStCenter;
+        rayStCenter = raySt - center;
 
         float
             A = ray.dot(ray),
@@ -70,8 +77,27 @@ public:
 
         float root1 = (-B - Delta) / (2 * A);
         float root2 = (-B + Delta) / (2 * A);
-        if (root1 > 0 && root2 > 0) return std::min(root1, root2);
-        if (root1 > 0 || root2 > 0) return std::max(root1, root2);
+
+        if (engraving != nullptr) {
+            thread_local Vector3f intersection;
+
+            if (root1 > EPS) {
+                intersection = (raySt + root1 * ray - center).normalized();
+                if (engraving(intersection)) {
+                    return root1;
+                }
+            }
+            if (root2 > EPS) {
+                intersection = (raySt + root2 * ray - center).normalized();
+                if (engraving(intersection)) {
+                    return root2;
+                }
+            }
+            return FLT_MAX;
+        }
+
+        if (root1 > EPS && root2 > EPS) return std::min(root1, root2);
+        if (root1 > EPS || root2 > EPS) return std::max(root1, root2);
         return FLT_MAX;
     }
 
@@ -97,7 +123,7 @@ public:
     Vector3f p1, p2, p3;
 
     float intersect(const Vector3f& raySt, const Vector3f& ray) override {
-        Vector3f edge[2], tmp, p, q;
+        thread_local Vector3f edge[2], tmp, p, q;
         edge[0] = p2 - p1;
         edge[1] = p3 - p1;
 

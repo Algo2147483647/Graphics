@@ -44,9 +44,23 @@ inline void modeling(ObjectTree& objTree) {
 		material->reflectProbability = 0;
 		material->refractivity[0] = 1.7;
 
-		objTree.add(new Sphere({ 650, 1000, 500 }, 100), material);
+		objTree.add(new Sphere({ 1000, 1000, 500 }, 100), material);
 	}
+	{
+		material = new Material({ 1, 0, 0 });
+		material->diffuseReflectProbability = 1;
 
+		objTree.add(new Sphere({ 1000, 600, 500 }, 60, [](Vector3f& p) {
+			float x = acos(p[2]);
+			float y = atan(p[1] / p[0]) + (p[1] >= 0 ? PI / 2 : PI / 2 * 3);
+			y += PI / 4;
+			float o = y - ((int)(y / (PI / 2))) * (PI / 2);
+			float r = 3 / 2.5 * sin(o) * cos(o) / (pow(sin(o), 3) + pow(cos(o), 3));
+			if ((PI - x) < 2 * asin(r)) 
+				return true; 
+			return false;
+		}), material);
+	}
 	{
 		material = new Material({ 1, 1, 1 });
 		material->diffuseReflectProbability = 1;
@@ -65,7 +79,7 @@ inline void RayTracingTest() {
 	RayTracing::debug(camera, objTree);
 
 	auto start = std::chrono::high_resolution_clock::now();
-	RayTracing::traceRay(camera, objTree, img, 0, 1000);
+	RayTracing::traceRay(camera, objTree, img, 0, 12000);
 	auto stop = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
 	std::cout << "Time taken by traceRay: " << duration.count() << " milliseconds" << std::endl;
