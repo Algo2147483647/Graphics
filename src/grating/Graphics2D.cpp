@@ -115,7 +115,7 @@ void Graphics::drawRectangle(Image& image, int x1, int y1, int x2, int y2)
 }
 
 void Graphics::drawRegularPolygon (Image& image, int  x, int  y, int l, int n, float a0) {
-    float a = 2 * PI / n;
+    float a = 2 * M_PI / n;
 
     for (int i = 1; i < n; i++) 
 		drawLine(image, 

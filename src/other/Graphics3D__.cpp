@@ -451,7 +451,7 @@ void GraphicsND::drawPolygon(Mat<float> p[], int n) {
 **-----------------------------------------------------------------------*/
 void GraphicsND::drawCircle(Mat<float>& center, double r, double delta, Mat<float>* direct) {
 	if (direct == NULL) {
-		double dAngle = 2 * PI / delta;
+		double dAngle = 2 * M_PI / delta;
 		Mat<float> ps(2), pe(2);
 		for (int i = 0; i < delta; i++) {
 			double theta = i * dAngle;
@@ -588,8 +588,8 @@ void GraphicsND::drawFrustum(Mat<float>& st, Mat<float>& ed, double Rst, double 
 	Mat<float> stPoint, edPoint, preStPoint, preEdPoint, deltaVector(3);
 	for (int i = 0; i <= delta; i++) {
 		deltaVector = {
-			cos(i * 2.0 * PI / delta),
-			sin(i * 2.0 * PI / delta),
+			cos(i * 2.0 * M_PI / delta),
+			sin(i * 2.0 * M_PI / delta),
 			0
 		};
 		deltaVector.mul(rotateMat, deltaVector);
@@ -661,7 +661,7 @@ void GraphicsND::drawSphere(Mat<float>& center, double r,
 	}
 }
 void GraphicsND::drawSphere(Mat<float>& center, double r, double dAngle) {
-	drawSphere(center, r, 0, 2 * PI, -PI / 2, PI / 2, dAngle);
+	drawSphere(center, r, 0, 2 * M_PI, -M_PI / 2, M_PI / 2, dAngle);
 }
 /*--------------------------------[ getSphereFibonacciPoint 球面均匀点分布 ]--------------------------------
 *	[Referance]:
@@ -671,7 +671,7 @@ void GraphicsND::drawSphere2(Mat<float>& center, double r, int n) {
 	// 均匀球面点
 	Mat<float> point(3);
 	double goldenRatio = (1 + sqrt(5)) / 2;				// 黄金分割点
-	double angleIncrement = PI * 2 * goldenRatio;
+	double angleIncrement = M_PI * 2 * goldenRatio;
 	for (int i = 0; i < 300; i++) {
 		double t = (double)i / n, inclination = acos(1 - 2 * t), azimuth = angleIncrement * i;
 		point[0] = center[0] + r * sin(inclination) * cos(azimuth);
@@ -694,9 +694,9 @@ void GraphicsND::drawEllipsoid(Mat<float>& center, Mat<float>& r) {
 	const int delta = 5;
 	Mat<float> point(3);
 	for (int i = 0; i < 360 / delta; i++) {
-		double theta = (i * delta) * 2.0 * PI / 360;
+		double theta = (i * delta) * 2.0 * M_PI / 360;
 		for (int j = -90 / delta; j <= 90 / delta; j++) {
-			double phi = (j * delta) * 2.0 * PI / 360;
+			double phi = (j * delta) * 2.0 * M_PI / 360;
 			point[0] = r[0] * cos(phi) * cos(theta) + center[0];
 			point[1] = r[1] * cos(phi) * sin(theta) + center[1];
 			point[2] = r[2] * sin(phi) + center[2];
@@ -724,8 +724,8 @@ void GraphicsND::drawPipe(Mat<float>& st, Mat<float>& ed, double Rst, double Red
 	Mat<float> stPoint, edPoint, preStPoint, preEdPoint, deltaVector(3);
 	for (int i = 0; i <= delta; i++) {
 		deltaVector = {
-			cos(i * 2.0 * PI / delta),
-			sin(i * 2.0 * PI / delta),
+			cos(i * 2.0 * M_PI / delta),
+			sin(i * 2.0 * M_PI / delta),
 		0 };
 		deltaVector.mul(rotateMat, deltaVector);
 		stPoint.add(st, stPoint.mul(Rst, deltaVector));
@@ -807,10 +807,10 @@ void GraphicsND::drawRotator(Mat<float>& zero, Mat<float>& axis, Mat<float>& f, 
 		); RotateMatTmp.block(1, 3, 1, 3, RotateMat0);
 	} else RotateMat0.E(3);
 	//main
-	int angleNum = (ed - st) / (2 * PI) * delta;
+	int angleNum = (ed - st) / (2 * M_PI) * delta;
 	for (int i = 0; i <= angleNum; i++) {
 		// 计算 Rotate Matrix
-		rotate(axis, st + i * 2 * PI / delta, tmp.zero(3), RotateMatTmp.E(4));
+		rotate(axis, st + i * 2 * M_PI / delta, tmp.zero(3), RotateMatTmp.E(4));
 		RotateMatTmp.block(1, 3, 1, 3, RotateMat) *= RotateMat0;
 		// 画旋转体
 		if (i != 0) {
@@ -926,14 +926,14 @@ void GraphicsND::draw4DSphere(Mat<float>& center, double r) {
 	Mat<float> point(4), pointU(4), pointL(4), pointUL(4);
 	point[3] = pointU[3] = pointL[3] = pointUL[3] = center[3] - r;
 	double delta = 36, dz = r / 3;
-	double dAngle = 2.0 * PI / delta;
-	int ThetaNum  = 2.0 * PI / dAngle,
-		PhiNum = PI / dAngle;
+	double dAngle = 2.0 * M_PI / delta;
+	int ThetaNum  = 2.0 * M_PI / dAngle,
+		PhiNum = M_PI / dAngle;
 	while (point[3] <= center[3] + r) {
 		for (int i = 1; i <= ThetaNum; i++) {
 			double theta = i * dAngle;
 			for (int j = 1; j <= PhiNum; j++) {
-				double phi = -PI / 2 + j * dAngle;
+				double phi = -M_PI / 2 + j * dAngle;
 				double rt = sqrt(r * r - point[3] * point[3]);
 				point[0] = rt * cos(phi) * cos(theta) + center[0];
 				point[1] = rt * cos(phi) * sin(theta) + center[1];
@@ -1151,12 +1151,12 @@ void GraphicsND::interactive() {
 		if (ch == 'w') translate(delta = { 0,-v, 0 });
 		if (ch == 'q') translate(delta = { 0, 0, v });
 		if (ch == 'e') translate(delta = { 0, 0,-v });
-		if (ch == 'u') rotate	(delta = { 0, 0, 1 }, 2 * PI / 360 * v, zero = {0, 0, perspective});
-		if (ch == 'j') rotate	(delta = { 0, 0, 1 },-2 * PI / 360 * v, zero = {0, 0, perspective});
-		if (ch == 'i') rotate	(delta = { 1, 0, 0 }, 2 * PI / 360 * v, zero = {0, 0, perspective});
-		if (ch == 'k') rotate	(delta = { 1, 0, 0 },-2 * PI / 360 * v, zero = {0, 0, perspective});
-		if (ch == 'o') rotate	(delta = { 0, 1, 0 }, 2 * PI / 360 * v, zero = {0, 0, perspective});
-		if (ch == 'l') rotate	(delta = { 0, 1, 0 },-2 * PI / 360 * v, zero = {0, 0, perspective});
+		if (ch == 'u') rotate	(delta = { 0, 0, 1 }, 2 * M_PI / 360 * v, zero = {0, 0, perspective});
+		if (ch == 'j') rotate	(delta = { 0, 0, 1 },-2 * M_PI / 360 * v, zero = {0, 0, perspective});
+		if (ch == 'i') rotate	(delta = { 1, 0, 0 }, 2 * M_PI / 360 * v, zero = {0, 0, perspective});
+		if (ch == 'k') rotate	(delta = { 1, 0, 0 },-2 * M_PI / 360 * v, zero = {0, 0, perspective});
+		if (ch == 'o') rotate	(delta = { 0, 1, 0 }, 2 * M_PI / 360 * v, zero = {0, 0, perspective});
+		if (ch == 'l') rotate	(delta = { 0, 1, 0 },-2 * M_PI / 360 * v, zero = {0, 0, perspective});
 		if (ch == 'n') perspective += v * 10;
 		if (ch == 'm') perspective -= v * 10;
 		if (ch >= '0' && ch <= '9') v = ch - '0';

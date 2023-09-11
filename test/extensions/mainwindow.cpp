@@ -199,48 +199,48 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 
     case Qt::Key_R: 
         normalize(direct);
-        direct(0) = direct(0) * cos(10 * 2 * PI / 360) + direct(1) * sin(10 * 2 * PI / 360);
-        direct(1) = direct(0) *-sin(10 * 2 * PI / 360) + direct(1) * cos(10 * 2 * PI / 360);
+        direct(0) = direct(0) * cos(10 * 2 * M_PI / 360) + direct(1) * sin(10 * 2 * M_PI / 360);
+        direct(1) = direct(0) *-sin(10 * 2 * M_PI / 360) + direct(1) * cos(10 * 2 * M_PI / 360);
 
         normalize(direct);
         mul(direct, l, direct);
         break;
     case Qt::Key_F:
         normalize(direct);
-        direct(0) = direct(0) * cos(-10 * 2 * PI / 360) + direct(1) * sin(-10 * 2 * PI / 360);
-        direct(1) = direct(0) *-sin(-10 * 2 * PI / 360) + direct(1) * cos(-10 * 2 * PI / 360);
+        direct(0) = direct(0) * cos(-10 * 2 * M_PI / 360) + direct(1) * sin(-10 * 2 * M_PI / 360);
+        direct(1) = direct(0) *-sin(-10 * 2 * M_PI / 360) + direct(1) * cos(-10 * 2 * M_PI / 360);
 
         normalize(direct);
         mul(direct, l, direct);
         break;
     case Qt::Key_T:
         normalize(direct);
-        direct(0) = direct(0) * cos(10 * 2 * PI / 360) + direct(2) * sin(10 * 2 * PI / 360);
-        direct(2) = direct(0) *-sin(10 * 2 * PI / 360) + direct(2) * cos(10 * 2 * PI / 360);
+        direct(0) = direct(0) * cos(10 * 2 * M_PI / 360) + direct(2) * sin(10 * 2 * M_PI / 360);
+        direct(2) = direct(0) *-sin(10 * 2 * M_PI / 360) + direct(2) * cos(10 * 2 * M_PI / 360);
 
         normalize(direct);
         mul(direct, l, direct);
         break;
     case Qt::Key_G:
         normalize(direct);
-        direct(0) = direct(0) * cos(-10 * 2 * PI / 360) + direct(2) * sin(-10 * 2 * PI / 360);
-        direct(2) = direct(0) *-sin(-10 * 2 * PI / 360) + direct(2) * cos(-10 * 2 * PI / 360);
+        direct(0) = direct(0) * cos(-10 * 2 * M_PI / 360) + direct(2) * sin(-10 * 2 * M_PI / 360);
+        direct(2) = direct(0) *-sin(-10 * 2 * M_PI / 360) + direct(2) * cos(-10 * 2 * M_PI / 360);
 
         normalize(direct);
         mul(direct, l, direct);
         break;
     case Qt::Key_Y: 
         normalize(direct);
-        direct(1) = direct(1) * cos(10 * 2 * PI / 360) + direct(2) * sin(10 * 2 * PI / 360);
-        direct(2) = direct(1) *-sin(10 * 2 * PI / 360) + direct(2) * cos(10 * 2 * PI / 360);
+        direct(1) = direct(1) * cos(10 * 2 * M_PI / 360) + direct(2) * sin(10 * 2 * M_PI / 360);
+        direct(2) = direct(1) *-sin(10 * 2 * M_PI / 360) + direct(2) * cos(10 * 2 * M_PI / 360);
 
         normalize(direct);
         mul(direct, l, direct);
         break;
     case Qt::Key_H: 
         normalize(direct);
-        direct(1) = direct(1) * cos(-10 * 2 * PI / 360) + direct(2) * sin(-10 * 2 * PI / 360);
-        direct(2) = direct(1)  -sin(-10 * 2 * PI / 360) + direct(2) * cos(-10 * 2 * PI / 360);
+        direct(1) = direct(1) * cos(-10 * 2 * M_PI / 360) + direct(2) * sin(-10 * 2 * M_PI / 360);
+        direct(2) = direct(1)  -sin(-10 * 2 * M_PI / 360) + direct(2) * cos(-10 * 2 * M_PI / 360);
 
         normalize(direct);
         mul(direct, l, direct);

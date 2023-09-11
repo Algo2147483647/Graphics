@@ -23,7 +23,6 @@ namespace RayTracing {
 	static int threadNum = 20;
 	static bool is_debug = 0;
 
-
 	/******************************************************************************
 	*						追踪光线
 	*	[步骤]:
@@ -34,7 +33,7 @@ namespace RayTracing {
 				计算三角形反射方向，将反射光线为基准重新计算
 	&	[注]:distance > 1而不是> 0，是因为反射光线在接触面的精度内，来回碰自己....
 	******************************************************************************/
-	inline Vector3f& traceRay(const ObjectTree& objTree, Ray& ray, int level) {
+	inline Vector3f& traceRay(const ObjectTree& objTree, Ray& ray, const int level) {
 		if (level > maxRayLevel) {
 			return ray.color = Vector3f(0, 0, 0);
 		}
@@ -45,18 +44,19 @@ namespace RayTracing {
 			return ray.color = Vector3f(0, 0, 0);
 		}
 
-		if (is_debug) {
-			thread_local Vector3f rayStNew = ray.origin + dis * ray.direct;
+		if (is_debug && level == 2) {
+			thread_local Vector3f rayStNew;
+			rayStNew = ray.origin + dis * ray.direct;
 			unique_lock<mutex> lock(_mutex);
 			Graphics::drawLine(imgXY, rayStNew[0], rayStNew[1], ray.origin[0], ray.origin[1]);
 			Graphics::drawLine(imgYZ, rayStNew[1], rayStNew[2], ray.origin[1], ray.origin[2]);
 		}
-		
-		Material* material = obj->material;
-		if (material->rediate) {
-			return ray.color = ray.color.cwiseProduct(material->baseColor);
-		}
 
+		if (obj->material->rediate) {
+			ray.color = ray.color.cwiseProduct(obj->material->baseColor);
+			return ray.color;
+		}
+		
 		ray.origin += dis * ray.direct;
 		thread_local Vector3f faceVec;
 		{
@@ -66,7 +66,7 @@ namespace RayTracing {
 			}
 		}
 		
-		material->func(ray, faceVec, ray.color, ray.direct);
+		obj->material->dielectricSurfacePropagation(ray, faceVec);
 		traceRay(objTree, ray, level + 1);
 		return ray.color;
 	}
@@ -79,8 +79,8 @@ namespace RayTracing {
 		
 		for (int y = ySt; y < yEd; y++) {
 			for (int x = xSt; x < xEd; x++) {
-				sampleVec = (x - img[0].rows() / 2.0 - 0.5) * camera.ScreenXVec +
-					        (y - img[0].cols() / 2.0 - 0.5) * camera.ScreenYVec;
+				sampleVec = (x + dis(gen) - img[0].rows() / 2.0 - 0.5) * camera.ScreenXVec +
+					        (y + dis(gen) - img[0].cols() / 2.0 - 0.5) * camera.ScreenYVec;
 				ray.origin =  camera.center + sampleVec;
 				ray.direct = (camera.direct + sampleVec).normalized();
 				ray.color = Vector3f::Ones();

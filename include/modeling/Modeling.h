@@ -2,12 +2,10 @@
 #define MODELING_H
 
 #include <vector>
-#include "Matrix.h"
+#include <corecrt_math_defines.h>
 #include "GraphicsIO.h"
 #include "MarchingCubes.h"
 #include "Ear_Clipping.h"
-
-#define PI 3.141592653589
 
 using namespace std;
 
@@ -29,17 +27,17 @@ void writeModel(const char* fileName);
 
 /* 图形 */
 void Rotator	(Point& center, Point& axis, vector<Point>& f, 
-				 int pointNum, double st = 0, double ed = 2 * PI, int isClosed = false);		// 旋转体 
+				 int pointNum, double st = 0, double ed = 2 * M_PI, int isClosed = false);		// 旋转体 
 void Translator	(Point& st, Point& ed, vector<Point>& f, int isClosed = true);			// 平移体 
 void Translator	(vector<Point>& path, vector<Point>& f, int isClosed = true);
 void Rotator_Translator
                 (Point& center, Point& axis, vector<Point>& f,
 	             vector<double>& direction, double length,
-				 int pointNum, double st = 0, double ed = 2 * PI);
+				 int pointNum, double st = 0, double ed = 2 * M_PI);
 /* 2D Points */
 static vector<Point>& Circle(vector<Point>& points, double R, int N, int clockwise = -1) {
 	for (int i = 0; i <= N; i++) {
-		double angle = clockwise * i / (double) N * 2 * PI;
+		double angle = clockwise * i / (double) N * 2 * M_PI;
 		points.push_back({ R * sin(angle), R * cos(angle) });
 	}
 	return points;
@@ -51,7 +49,7 @@ void Rectangle	(Point& c, double X, double Y);
 void Quadrangle	(Point& p1, Point& p2, Point& p3, Point& p4);
 void ConvexPolygon(vector<Point>& p);
 void Polygon    (Point& c, vector<Point>& p);
-void Circle		(Point& center, double r, int pointNum, double angleSt = 0, double angleEd = 2 * PI);
+void Circle		(Point& center, double r, int pointNum, double angleSt = 0, double angleEd = 2 * M_PI);
 //void Surface	(Mat<double>& z, double xs, double xe, double ys, double ye, Point* direct);
 
 /* 3D Graph */
@@ -62,8 +60,8 @@ void Cuboid		(Point& center, vector<double>& direction, double L, double W, doub
 void Frustum	(Point& st, Point& ed, double Rst, double Red, int pointNum);							// 画圆台
 void Sphere		(Point& center, double r, int pointNum);
 void Sphere		(Point& center, double r, int ThetaNum, int PhiNum, 
-				 double thetaSt = 0, double thetaEd = 2 * PI, 
-			     double phiSt = -PI / 2, double phiEd = PI / 2);
+				 double thetaSt = 0, double thetaEd = 2 * M_PI, 
+			     double phiSt = -M_PI / 2, double phiEd = M_PI / 2);
 
 /* Modifier */
 void addTriangleSet(Point& center, vector<triangle>& tris);

@@ -23,7 +23,7 @@ namespace RayTracing {
 	public:
 		Shape* shape;
 		Material* material;
-		//Pattern* pattern;
+		//Texture* texture;
 	};
 
 	class ObjectNode {
@@ -46,7 +46,7 @@ namespace RayTracing {
 		}
 	};
 
-	class  ObjectTree {
+	class ObjectTree {
 	public:
 		ObjectNode* root = nullptr;
 		vector<Object> ObjectSet;

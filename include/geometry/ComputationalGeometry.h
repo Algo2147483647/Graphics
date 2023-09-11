@@ -9,7 +9,6 @@
 
 using namespace Matrix;
 
-#define PI 3.141592653589
 #define EPS 10e-4
 
 namespace Geometry {
@@ -100,7 +99,7 @@ inline Mat<float>& ThreePoints2Circle(Mat<float> Points[], Mat<float>& center, d
 inline Mat<float>* getSphereFibonacciPoint(int n) {
 	Mat<float>* point = (Mat<float>*)malloc(n * sizeof(Mat<float>));
 	memset(point, 0, n * sizeof(Mat<float>));
-	double goldenRatio = (1 + sqrt(5)) / 2, angleIncrement = PI * 2 * goldenRatio;	// 黄金分割点
+	double goldenRatio = (1 + sqrt(5)) / 2, angleIncrement = M_PI * 2 * goldenRatio;	// 黄金分割点
 	for (int i = 0; i < n; i++) {
 		double t = (double)i / n, inclination = acos(1 - 2 * t), azimuth = angleIncrement * i;
 		point[i].zero(3);

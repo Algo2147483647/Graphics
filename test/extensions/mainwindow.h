@@ -28,8 +28,6 @@
 #include "../../src/Window.h"
 #include "../../src/Graphics/GraphicsND.h"
 
-#define PI 3.141592653589
-
 class MainWindow : public QMainWindow
 {
 private:

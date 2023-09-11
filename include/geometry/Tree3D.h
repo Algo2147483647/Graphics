@@ -23,7 +23,7 @@ void Tree3D(vector<double>& center,
 
 
 	for (int i = 0; i < forks; i++) {
-		double theta = 2 * PI * (double)i / forks;
+		double theta = 2 * M_PI * (double)i / forks;
 		p = { 
 			sin(angle) * cos(theta), 
 			sin(angle) * sin(theta),

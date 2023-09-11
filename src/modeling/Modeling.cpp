@@ -8,14 +8,14 @@ void Modeling::writeModel(const char* fileName) {
 	Mat<float> p[3], fv;
 	Mat<double> t;
 
-	p[0].alloc(3, Object.size());
-	p[1].alloc(3, Object.size());
-	p[2].alloc(3, Object.size());
+	p[0].resize(3, Object.size());
+	p[1].resize(3, Object.size());
+	p[2].resize(3, Object.size());
 
-	t.alloc(3, Object.size()).fill(1);
-	normalize(t);
+	t.resize(3, Object.size()).fill(1);
+	t.normalize();
 
-	fv.alloc(3, Object.size());
+	fv.resize(3, Object.size());
 	for (int i = 0; i < t.size(); i++)
 		fv(i) = t(i);
 
@@ -26,7 +26,7 @@ void Modeling::writeModel(const char* fileName) {
 			for (int dim = 0; dim < 3; dim++)
 				p[poi](dim, tri) = Object[tri][poi * 3 + dim];
 
-	GraphicsIO::stlWrite(fileName, head, fv, p[0], p[1], p[2], attr);
+	Graphics::stlWrite(fileName, head, fv, p[0], p[1], p[2], attr);
 }
 
 /*

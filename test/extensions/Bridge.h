@@ -74,7 +74,7 @@ inline void FourLevelInterchange(Modeling& md, Modeling::Point& c, double roadL 
 			vector<Modeling::Point> path;
 
 			for (int i = 0; i < N; i++) {
-				double a = 0.025 * PI + PI * 0.45 / (double)N * i;
+				double a = 0.025 * M_PI + M_PI * 0.45 / (double)N * i;
 
 				p1 = {
 					c[0] + x_step[k] * (1.5 * roadL + R - R * sin(a)),
@@ -104,7 +104,7 @@ inline void FourLevelInterchange(Modeling& md, Modeling::Point& c, double roadL 
 
 			for (int i = 0; i < N; i++) {
 				double
-					a = PI / 4 + (i - N / 2) / (double)N * 2.2,
+					a = M_PI / 4 + (i - N / 2) / (double)N * 2.2,
 					x = (i / (double)N - 0.5) * 2 * 6;
 
 				p1 = {

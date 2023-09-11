@@ -4,7 +4,10 @@
 #include <Eigen/Dense>
 #include <random>
 #include <corecrt_math_defines.h>
+
 using namespace Eigen;
+
+#define EPS 1e-4f
 
 namespace GeometricalOptics {
 	thread_local std::mt19937 gen(std::random_device{}());
@@ -28,12 +31,15 @@ namespace GeometricalOptics {
 
 	/*---- 漫反射 ----*/
 	inline Vector3f diffuseReflect(const Vector3f& RayI, const Vector3f& faceVec) {
-		float r1 = 2 * M_PI * dis(gen), r2 = dis(gen);
-		thread_local Vector3f t;
+		thread_local float r1, r2;
+		r1 = 2 * M_PI * dis(gen);
+		r2 = dis(gen);
 
-		t = Vector3f::UnitX();
-		if (std::abs(faceVec[0]) > 0.1)
+		thread_local Vector3f t;
+		if (std::fabs(faceVec[0]) > EPS)
 			t = Vector3f::UnitY();
+		else
+			t = Vector3f::UnitX();
 
 		thread_local Vector3f u, v;
 		u = (cos(r1) * sqrt(r2) * (t.cross(faceVec)).normalized()).eval();

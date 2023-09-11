@@ -3,7 +3,7 @@
 Mat<bool> img1, img2, img3, img4;
 
 bool f1(double x, double y) { std::swap(x, y); x *= 1.5; y *= 1.5; if (x < 0 || y < 0 || x >= img1.rows || y >= img1.cols) return 0; return img1(img1.rows - 1 - x, y); }
-bool f3(double x, double y) { if (x < PI / 6)return true; if (x > PI - PI / 6) return 0; if (y > PI) y -= PI; return img3(y * (img3.rows - 1) / PI, (img3.cols - 1) / (2 * PI / 3) * (x - PI / 6)); }
+bool f3(double x, double y) { if (x < M_PI / 6)return true; if (x > M_PI - M_PI / 6) return 0; if (y > M_PI) y -= M_PI; return img3(y * (img3.rows - 1) / M_PI, (img3.cols - 1) / (2 * M_PI / 3) * (x - M_PI / 6)); }
 
 void Model(RayTracing& ray) {
 	Material* material;
@@ -24,9 +24,9 @@ void Model(RayTracing& ray) {
 	ray.objTree.addSphere({ 500, 500 + 75, 200 }, 150, material);
 	material = new Material; material->color = { 1, 0.678, 0.784 };	material->reflect = 1;
 	ray.objTree.addSphere({ 500,250,-170 + 120 }, 120, material, [](double x, double y) {
-		double o = y - ((int)(y / (PI / 2))) * (PI / 2), r = 3 / 2.5 * sin(o) * cos(o) / (pow(sin(o), 3) + pow(cos(o), 3)); if ((PI - x) < asin(r)) return true; return false; });
-	ray.objTree.addSphere({ 500,250,-170 + 120 / 3.0 }, 120 / 3.0, material, [](double x, double y) { y += PI / 4;
-	double o = y - ((int)(y / (PI / 2))) * (PI / 2), r = 3 / 2.5 * sin(o) * cos(o) / (pow(sin(o), 3) + pow(cos(o), 3)); if ((PI - x) < 2 * asin(r)) return true; return false; });
+		double o = y - ((int)(y / (M_PI / 2))) * (M_PI / 2), r = 3 / 2.5 * sin(o) * cos(o) / (pow(sin(o), 3) + pow(cos(o), 3)); if ((M_PI - x) < asin(r)) return true; return false; });
+	ray.objTree.addSphere({ 500,250,-170 + 120 / 3.0 }, 120 / 3.0, material, [](double x, double y) { y += M_PI / 4;
+	double o = y - ((int)(y / (M_PI / 2))) * (M_PI / 2), r = 3 / 2.5 * sin(o) * cos(o) / (pow(sin(o), 3) + pow(cos(o), 3)); if ((M_PI - x) < 2 * asin(r)) return true; return false; });
 	material = new Material; material->color = 1;	material->rediate = 1;
 	ray.objTree.addSphere({ 500,250,-20 }, 30, material);
 	material = new Material; material->color = { 1, 0.678, 0.784 };	material->diffuseReflect = 1;

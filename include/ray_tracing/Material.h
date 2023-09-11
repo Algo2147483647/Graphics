@@ -16,7 +16,6 @@ namespace RayTracing {
 		Vector3f refractivity;
 
 		bool rediate = false;
-		bool quickReflect;
 		float diffuseReflectProbability = 0;
 		float reflectProbability = 1;
 		float refractProbability = 0;
@@ -30,25 +29,24 @@ namespace RayTracing {
 		Material(Vector3f baseColor) : baseColor(baseColor) { ; }
 
 
-		Vector3f& func(Ray& ray, const Vector3f& norm, Vector3f& color, Vector3f& res) {
+		void dielectricSurfacePropagation(Ray& ray, const Vector3f& norm) {
 			float randnum = GeometricalOptics::dis(gen);
 
-			if (randnum < diffuseReflectProbability) {
-				res = diffuseReflect(ray.direct, norm);
-				color *= diffuseReflectLoss;
+			if (0 && randnum < diffuseReflectProbability) {
+				ray.direct = diffuseReflect(ray.direct, norm);
+				ray.color *= diffuseReflectLoss;
 			}
-			else if (randnum < reflectProbability + diffuseReflectProbability) {
-				res = reflect(ray.direct, norm);
-				color *= reflectLoss;
+			else if (1 || randnum < reflectProbability + diffuseReflectProbability) {
+				ray.direct = reflect(ray.direct, norm);
+				ray.color *= reflectLoss;
 			}
 			else {
 				ray.refractivity = (ray.refractivity == 1.0) ? refractivity[0] : 1.0 / refractivity[0];
-				res = refract(ray.direct, norm, ray.refractivity);
-				color *= refractLoss;
+				ray.direct = refract(ray.direct, norm, ray.refractivity);
+				ray.color *= refractLoss;
 			}
 
-			color = color.cwiseProduct(baseColor);
-			return res;
+			ray.color = ray.color.cwiseProduct(baseColor);
 		}
 	};
 }

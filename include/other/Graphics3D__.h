@@ -15,7 +15,7 @@ limitations under the License.
 #include "Graphics.h"
 #include "GraphicsFileCode.h"
 #include <conio.h>
-#define PI 3.141592653589
+
 class GraphicsND
 {
 public:
@@ -73,9 +73,9 @@ public:
 	void drawGoldbergPolyhedron	(Mat<float>&, int m, int n);						//画Goldberg多面体(五,六边形密铺球)
 	void drawFrustum	(Mat<float>& st, Mat<float>& ed, double Rst, double Red, double delta = 36);	//画圆台
 	void drawCylinder	(Mat<float>& st, Mat<float>& ed, double r, double delta = 36);//画圆柱
-	void drawSphere		(Mat<float>& center, double r, double dAngle = 2 * PI / 36);			//画球
+	void drawSphere		(Mat<float>& center, double r, double dAngle = 2 * M_PI / 36);			//画球
 	void drawSphere		(Mat<float>& center, double r, double thetaSt, double thetaEd, 
-							double phiSt = -PI / 2, double phiEd = PI / 2, double dAngle = 2*PI/36);//画部分球
+							double phiSt = -M_PI / 2, double phiEd = M_PI / 2, double dAngle = 2*M_PI/36);//画部分球
 	void drawSphere2	(Mat<float>& center, double r, int n = 300);				//画球
 	void drawEllipsoid	(Mat<float>& center, Mat<float>& r);							//画椭球
 	void drawBody		(Mat<float>& center, Mat<float>& r);							//画曲体
@@ -86,7 +86,7 @@ public:
 	void drawPipe		(Mat<float>& path,		   double R,			   int delta = 36);	//画平移体(正多边形截面,any路径)
 	void drawPipe		(Mat<float>& st, Mat<float>& ed, Mat<float>& f);								//画平移体(any截面,线段路径)
 	void drawPipe		(Mat<float>& path, Mat<float>& f);										//画平移体(any截面,any路径)
-	void drawRotator	(Mat<float>& zero, Mat<float>& axis, Mat<float>& f, int delta = 36, double st = 0, double ed = 2 * PI);	//画旋转体
+	void drawRotator	(Mat<float>& zero, Mat<float>& axis, Mat<float>& f, int delta = 36, double st = 0, double ed = 2 * M_PI);	//画旋转体
 	void drawStairs		(Mat<float>& zero, double Length, double Width, double Height, int Num);	//画阶梯
 	// Word
 	void drawChar		(Mat<float>& p0, char charac);				//显示字符

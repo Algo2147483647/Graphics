@@ -1,6 +1,4 @@
 #include <vector>
-#include "Matrix.h"
-
 
 // Regular hexagon Tessellation
 void HexagonTessellation(int numX, int numY, double gridLen, std::vector<Mat<float>>& points, std::vector<Mat<float>>& edges) {

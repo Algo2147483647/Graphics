@@ -10,7 +10,7 @@
 using namespace Eigen;
 using namespace std;
 
-constexpr float EPS = 10e-4;
+#define EPS 1e-4f
 
 // Base Shape class
 class Shape {
@@ -37,6 +37,27 @@ public:
 
         float d = -(A * raySt(0) + B * raySt(1) + C * raySt(2) + D) / t;
         return d > 0 ? d : FLT_MAX;
+    }
+
+    Vector3f& faceVector(const Vector3f& intersect, Vector3f& res) override {
+        return res;
+    }
+
+    void boundingBox(Vector3f& pmax, Vector3f& pmin) override {
+        ;
+    }
+
+    void paint(Image& imgXY, Image& imgYZ) override {
+        ;
+    }
+};
+
+class LinearSurface : public Shape {
+public:
+    int order = 1;
+
+    float intersect(const Vector3f& raySt, const Vector3f& ray) override {
+        return FLT_MAX;
     }
 
     Vector3f& faceVector(const Vector3f& intersect, Vector3f& res) override {
@@ -185,36 +206,31 @@ public:
     Cuboid(Vector3f pmin, Vector3f pmax) : pmin(pmin), pmax(pmax) { ; }
 
     float intersect(const Vector3f& raySt, const Vector3f& ray) override {
-        float t0 = -FLT_MAX, t1 = FLT_MAX;
+        thread_local Vector3f tmin_t, tmax_t;
+        tmin_t = (pmin - raySt).cwiseQuotient(ray);
+        tmax_t = (pmax - raySt).cwiseQuotient(ray);
 
-        for (int dim = 0; dim < 3; dim++) {
-            if (fabs(ray[dim]) < EPS && (raySt[dim] < pmin[dim] || raySt[dim] > pmax[dim])) {
-                return FLT_MAX;
-            }
-            float
-                t0t = (pmin[dim] - raySt[dim]) / ray[dim],
-                t1t = (pmax[dim] - raySt[dim]) / ray[dim];
-            if (t0t > t1t)
-                swap(t0t, t1t);
+        thread_local float tmin, tmax;
+        tmin = tmin_t.cwiseMin(tmax_t).maxCoeff();
+        tmax = tmin_t.cwiseMax(tmax_t).minCoeff();
 
-            t0 = max(t0, t0t);
-            t1 = min(t1, t1t);
-
-            if (t0 > t1 || t1 < 0)
-                return FLT_MAX;
-        }
-        return t0 >= 0 ? t0 : t1;
+        if (tmin > tmax || tmax < 0)
+            return FLT_MAX;
+        return tmin >= 0 ? tmin : tmax;
     }
 
     Vector3f& faceVector(const Vector3f& intersect, Vector3f& res) override {
-        if (fabs(intersect[0] - pmin[0]) < EPS || 
-            fabs(intersect[0] - pmax[0]) < EPS)
+        if (fabs(intersect[0] - pmin[0]) < EPS)
+            res = { -1, 0, 0 };
+        else if (fabs(intersect[0] - pmax[0]) < EPS)
             res = { 1, 0, 0 };
-        else if (fabs(intersect[1] - pmin[1]) < EPS || 
-                 fabs(intersect[1] - pmax[1]) < EPS)
+        else if (fabs(intersect[1] - pmin[1]) < EPS)
+            res = { 0, -1, 0 };
+        else if (fabs(intersect[1] - pmax[1]) < EPS)
             res = { 0, 1, 0 };
-        else if (fabs(intersect[2] - pmin[2]) < EPS || 
-                 fabs(intersect[2] - pmax[2]) < EPS)
+        else if (fabs(intersect[2] - pmin[2]) < EPS)
+            res = { 0, 0, -1 };
+        else if (fabs(intersect[2] - pmax[2]) < EPS)
             res = { 0, 0, 1 };
 
         return res;
@@ -230,24 +246,5 @@ public:
         Graphics::drawRectangle(imgYZ, pmin[1], pmin[2], pmax[1], pmax[2]);
     }
 };
-
-class TriangleSet : public Shape {
-public:
-    vector<Vector3f> p1, p2, p3;
-
-    float intersect(const Vector3f& raySt, const Vector3f& ray) override {
-        
-        return FLT_MAX;
-    }
-
-    Vector3f& faceVector(const Vector3f& intersect, Vector3f& res) override {
-        return res;
-    }
-
-    void boundingBox(Vector3f& pmax, Vector3f& pmin) override {
-        ;
-    }
-};
-
 
 #endif

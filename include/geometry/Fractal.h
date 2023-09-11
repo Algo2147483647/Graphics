@@ -4,9 +4,6 @@
 #include <math.h>
 #include <complex>
 #include <vector>
-#include "Mat.h"
-
-#define PI 3.141692653589
 
 using namespace std;
 

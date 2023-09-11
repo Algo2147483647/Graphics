@@ -10,7 +10,7 @@
 #include <mutex>
 #include <string>
 
-#define PI 3.141592653589
+#define M_PI 3.141592653589
 mutex m;
 Mat<int> coff;
 
@@ -184,7 +184,7 @@ void work(Mat<unsigned int>& a) {
 
 LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
 
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow) {
+int WINAM_PI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow) {
     WNDCLASSW wc = { 0 };
     wc.hbrBackground = (HBRUSH)COLOR_BACKGROUND;
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -234,8 +234,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
 
-        BITMAPINFO bmi = { 0 };
-        bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        BITMAM_PINFO bmi = { 0 };
+        bmi.bmiHeader.biSize = sizeof(BITMAM_PINFOHEADER);
         bmi.bmiHeader.biWidth = buffer.rows;
         bmi.bmiHeader.biHeight = -buffer.rows; // negative height for top-down
         bmi.bmiHeader.biPlanes = 1;

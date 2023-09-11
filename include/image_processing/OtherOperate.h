@@ -3,8 +3,6 @@
 
 #include "BasicMachineLearning.h"
 
-#define PI 3.141592653589
-
 namespace ImageProcessing {
 
 	/*
@@ -149,7 +147,7 @@ namespace ImageProcessing {
 		Mat<float> GaussKernel(size, size);
 		for (int y = 0; y < size; y++)
 			for (int x = 0; x < size; x++)
-				GaussKernel(x, y) = 1 / (2 * PI * sigma * sigma) * exp(-(pow(x - size / 2, 2) + pow(y - size / 2, 2)) / (2 * sigma * sigma));
+				GaussKernel(x, y) = 1 / (2 * M_PI * sigma * sigma) * exp(-(pow(x - size / 2, 2) + pow(y - size / 2, 2)) / (2 * sigma * sigma));
 		return out.conv(in, GaussKernel *= 1 / GaussKernel.sum(), 1);
 	}
 

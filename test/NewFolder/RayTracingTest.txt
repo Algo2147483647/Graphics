@@ -14,8 +14,8 @@ Material	color = { 1, 1, 1 }	reflect = 1
 Sphere	{ 500, 500 + 75, 200 }, 150
 
 Material	color = { 1, 0.678, 0.784 }	reflect = 1
-Sphere	{ 500,250,-170 + 120 }, 120	,[](double x, double y) { double o = y - ((int)(y / (PI / 2))) * (PI / 2), r = 3 / 2.5 * sin(o) * cos(o) / (pow(sin(o), 3) + pow(cos(o), 3)); if ((PI - x) < asin(r)) return true; return false; }
-Sphere	{ 500,250,-170 + 120 / 3.0 }, 120 / 3.0	,[](double x, double y) { y += PI / 4; double o = y - ((int)(y / (PI / 2))) * (PI / 2), r = 3 / 2.5 * sin(o) * cos(o) / (pow(sin(o), 3) + pow(cos(o), 3)); if ((PI - x) < 2 * asin(r)) return true; return false; }
+Sphere	{ 500,250,-170 + 120 }, 120	,[](double x, double y) { double o = y - ((int)(y / (M_PI / 2))) * (M_PI / 2), r = 3 / 2.5 * sin(o) * cos(o) / (pow(sin(o), 3) + pow(cos(o), 3)); if ((M_PI - x) < asin(r)) return true; return false; }
+Sphere	{ 500,250,-170 + 120 / 3.0 }, 120 / 3.0	,[](double x, double y) { y += M_PI / 4; double o = y - ((int)(y / (M_PI / 2))) * (M_PI / 2), r = 3 / 2.5 * sin(o) * cos(o) / (pow(sin(o), 3) + pow(cos(o), 3)); if ((M_PI - x) < 2 * asin(r)) return true; return false; }
 
 Material	color = 1	rediate = 1
 Sphere	{ 500,250,-20 }, 30

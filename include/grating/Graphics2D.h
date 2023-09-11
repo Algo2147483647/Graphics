@@ -4,13 +4,12 @@
 #include <algorithm>
 #include <queue>
 #include <vector>
+#include <corecrt_math_defines.h>
 #include "Image.h"
 #include "bezier_curve.h"
 #include "font.h"
 
 using namespace std;
-
-#define PI 3.141592653589
 
 namespace Graphics {
 	typedef long long	int64; 

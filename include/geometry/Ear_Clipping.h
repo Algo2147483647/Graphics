@@ -1,5 +1,5 @@
-#ifndef GRAPH_EAR_CLIPING
-#define GRAPH_EAR_CLIPING
+#ifndef GRAPH_EAR_CLIM_PING
+#define GRAPH_EAR_CLIM_PING
 
 #include <vector>
 #include <cmath>
@@ -68,5 +68,5 @@ inline vector<triangle>& earClippingTriangulation(vector<Point>& polygon_, vecto
 }
 
 }
-#endif // !GRAPH_EAR_CLIPING
+#endif // !GRAPH_EAR_CLIM_PING
 

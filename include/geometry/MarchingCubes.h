@@ -276,7 +276,7 @@ inline vector<vector<double>>& MarchingCubes(
 	vector<int>& N, 
 	vector<vector<double>>& triangleSet
 ) {
-	static int
+	static const int
 		vertex[8] = { 0, 1, 3, 2, 4, 5, 7, 6 },
 		edge[12][2] = {
 			{0, 1}, {1, 2}, {3, 2}, {0, 3}, 
@@ -348,7 +348,7 @@ inline void MarchingCubes(
 	vector<double>& delta, 
 	vector<vector<double>>& triangleSet
 ) {
-	static int 
+	static const int
 		vertex[8] = { 0, 1, 3, 2, 4, 5, 7, 6 },
 		edge[12][2] = {
 			{0, 1}, {1, 2}, {3, 2}, {0, 3}, 
