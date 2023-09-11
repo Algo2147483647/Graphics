@@ -8,29 +8,39 @@
 (input) 2 points $\boldsymbol p_1, \boldsymbol p_2 \in \mathbb Z^2$  
 if $\boldsymbol p = \left(\begin{matrix}x \\ y\end{matrix}\right) \in \mathbb R^2$ in the line formed by $p_1$ and $p_2$, then
 
-$$(x_2 - x_1)(y - y_1) = (y_2 - y_1)(x - x_1)$$
+$$
+(x_2 - x_1)(y - y_1) = (y_2 - y_1)(x - x_1)
+$$
 
 we need find all pixels $\boldsymbol p \in \mathbb Z^2$ that the line formed by $p_1$ and $p_2$ pass through, and minimize the error $\epsilon \ge 0$,
 
-$$(x_2 - x_1)(y - y_1) = (y_2 - y_1)(x - x_1) \pm \epsilon$$
+$$
+(x_2 - x_1)(y - y_1) = (y_2 - y_1)(x - x_1) \pm \epsilon
+$$
 
 we set $\Delta_x, \Delta_y, a_x, a_y \in \mathbb Z$,
-  $$\Delta = \left(\begin{matrix}\Delta_x \\ \Delta_y\end{matrix}\right) = \left(\begin{matrix}x_2 - x_1 \\ y_2 - y_1\end{matrix}\right)$$
+$$
+  \Delta = \left(\begin{matrix}\Delta_x \\ \Delta_y\end{matrix}\right) = \left(\begin{matrix}x_2 - x_1 \\ y_2 - y_1\end{matrix}\right)
+$$
 
-$$\begin{align*}
+$$
+\begin{align*}
   \Rightarrow\quad 
   \min \quad& \epsilon = | a_y - a_x |  \\
   s.t. \quad
   & a_y = \Delta_x (y - y_1)  \\
   & a_x = \Delta_y (x - x_1)
-\end{align*}$$
+\end{align*}
+$$
 
 For higher dimensions, $\cdot^{(i)}$ refers to the value of the $i$-th dimension, the target is minimize the defferece $\epsilon$ among $a^{(i)}, i = 1,...,\dim$.
 
-$$\begin{align*}
+$$
+\begin{align*}
 \min \quad& \epsilon = \sum_{i,j = 1:\dim, i \neq j} | a^{(i)} - a^{(j)} | \\
 s.t. \quad & a^{(i)} = \left(x^{(i)} - x_1^{(i)}\right) \cdot \prod_{d = \{1:\dim\}-\{i\}} \Delta^{(i)}
-\end{align*}$$
+\end{align*}
+$$
 
 ## Bresenham Algorithm  
 
@@ -38,8 +48,12 @@ s.t. \quad & a^{(i)} = \left(x^{(i)} - x_1^{(i)}\right) \cdot \prod_{d = \{1:\di
 
   The target of this algorithm is to solve the problem without using any real number.
   then, we find
-  $$x \gets x \pm 1 \quad\Rightarrow\quad a_x \gets a_x \pm \Delta_y$$
-  $$y \gets y \pm 1 \quad\Rightarrow\quad a_y \gets a_y \pm \Delta_x$$
+$$
+  x \gets x \pm 1 \quad\Rightarrow\quad a_x \gets a_x \pm \Delta_y
+$$
+$$
+  y \gets y \pm 1 \quad\Rightarrow\quad a_y \gets a_y \pm \Delta_x
+$$
 
   We propose the algorithm: ```while``` $x \gets x \pm 1$ and $a \gets a \pm \Delta_y$, ```if``` $a \% \Delta_x$ has increased by $1$ compared with the previous moment, ```then``` $y \gets y \pm 1$. (The selection of $\pm$ depend on the relative size of $x_1, x_2$ and $y_1, y_2$)
 
@@ -67,17 +81,21 @@ s.t. \quad & a^{(i)} = \left(x^{(i)} - x_1^{(i)}\right) \cdot \prod_{d = \{1:\di
 # Circle, Ellipse, Sphere, Hyper-Sphere
 
 ## Problem
-$$\begin{align*}
+$$
+\begin{align*}
 x^2 + y^2 &= r^2  \tag{Circle, 2D}  \\
 x^2 + y^2 + z^2 &= r^2  \tag{Sphere, 3D} \\
 \|\boldsymbol p\|_2^2 = \sum_{i=1:\dim} p^{(i)2} &= r^2    \tag{any dimonsion}
-\end{align*}$$
+\end{align*}
+$$
 
 The target is to find all pixels $\boldsymbol p \in \mathbb Z^{\dim}$ that the boundary of Circle, Sphere or Hyper-Sphere pass through, and minimize the error $\epsilon \ge 0$. $x, y, r \in \mathbb Z$.
-$$\begin{align*}
+$$
+\begin{align*}
 \min \quad& \epsilon = |x^2 + y^2 - r^2|  \\
 \min \quad& \epsilon = \left|\|\boldsymbol p\|_2^2 - r^2 \right|
-\end{align*}$$
+\end{align*}
+$$
 
 ## Bresenham Algorithm   
 We only need to draw $\frac{1}{8}$ of a circle, and then we will get the whole circle through symmetry. If we start in $(0, r)$, then we draw in order  

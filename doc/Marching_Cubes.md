@@ -1,11 +1,16 @@
 * Marching Cubes
   - Purpose  
     Constructing an isosurface $f(x, y, z) = a$ of a 3D scalar field $f: \mathbb R^3 \to \mathbb R$ with triangle surface set.
-    $$S = \{(x, y, z)\ |\ f(x, y, z) = a\}$$
+    $$
+    S = \{(x, y, z)\ |\ f(x, y, z) = a\}
+    $$
 
-  - Algorithm  
+  - Algorithm
+    
+    <img src="./assets/polygonise3.gif" alt="img" style="zoom:33%;" />
+    
     We sample the scalar field $f(x, y, z)$ through a rectangular 3D grid, and create planar facets that best represent the isosurface $f(x, y, z) = a$ through this grid cell (Cube). The indexing for vertices and edges of the cube is:
-
+    
     |vertices indexing|$(\Delta x, \Delta y, \Delta z)$||vertices indexing|$(\Delta x, \Delta y, \Delta z)$|
     |:---:|:---:|:---:|:---:|:---:|
     | 0, 0b000 | (0, 0, 0) || 4, 0b100 | (0, 0, 1) |
@@ -23,14 +28,23 @@
     | 4 | (4, 5) || 10 | (2, 6) |
     | 5 | (5, 6) || 11 | (3, 7) |
     |||||
-
-    The value \{0, 1\} of a vertex in a cube indicates whether the value of the vertex location is greater than $a$ or less than $a$. And there are $N = 2^8 = 256$ cases that can be represented by binary numbers:  
-    $$\{0, 0, 0, 0, 0, 0, 0, 0\} \to \{1, 1, 1, 1, 1, 1, 1, 1\}$$
-
-    We connect the linear interpolation point $P$ of $3$ edges to generate a triangular facet. Thus, we can get the table of triangular facets that should be generated in each case (the triangular facet is represented by index of these three edges).
     
-    $$P = P_1 + \frac{(V_{iso} - V_{P1})}{V_{P2} - V_{P1}} (P_2 - P_1)$$
-
+    <img src="./assets/Grid-arrangement-Yellow-points-denote-the-midpoint-of-each-edge-The-vertex-will-be.png" alt="Grid arrangement. Yellow points denote the midpoint of each edge. The vertex will be highlighted if it receives a binary one.  " style="zoom:30%;" />
+    
+    <img src="./assets/polygonise1.gif" alt="img" style="zoom:55%;" />
+    
+    The value \{0, 1\} of a vertex in a cube indicates whether the value of the vertex location is greater than $a$ or less than $a$. And there are $N = 2^8 = 256$ cases that can be represented by binary numbers:  
+    $$
+    \{0, 0, 0, 0, 0, 0, 0, 0\} \to \{1, 1, 1, 1, 1, 1, 1, 1\}
+    $$
+    
+    We connect the linear interpolation point $P$ of $3$ edges to generate a triangular facet. Thus, we can get the table of triangular facets that should be generated in each case (the triangular facet is represented by index of these three edges).
+    $$
+    P = P_1 + \frac{(V_{iso} - V_{P1})}{V_{P2} - V_{P1}} (P_2 - P_1)
+    $$
+    
+    <img src="./assets/Type-of-surface-combinations-for-the-marching-cube-algorithm-The-black-circles-means.png" alt="Type of surface combinations for the marching cube algorithm. The black circles means that vertexes inside the surface.  " style="zoom:33%;" />
+    
     | Case | Triangular Facets || Case | Triangular Facets |
     |---|---|---|---|---|
     | 00000000 | () || 00000001 | (0, 8, 3) |
@@ -162,7 +176,7 @@
     | 11111100 | (1, 3, 8)  (9, 1, 8) || 11111101 | (0, 9, 1) |
     | 11111110 | (0, 3, 8) || 11111111 | () |
     ||
-
+    
   - Reference  
     - Lorensen, William E., and Harvey E. Cline. "Marching cubes: A high resolution 3D surface construction algorithm." ACM siggraph computer graphics 21.4 (1987): 163-169.
     - http://paulbourke.net/geometry/polygonise/

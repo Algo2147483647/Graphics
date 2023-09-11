@@ -34,7 +34,7 @@
         \end{matrix}\right.
       \end{align}$$
       
-      <img src=".\assets\2560px-HSV-RGB-comparison.svg.png" alt="img" style="zoom:15%;" />
+      <img src=".\assets\2560px-HSV-RGB-comparison.svg.png" alt="img" style="zoom:10%;" />
 
   - Reference
     - Nathan Moinvaziri at https://stackoverflow.com/questions/5919663/how-does-photoshop-blend-two-images-together

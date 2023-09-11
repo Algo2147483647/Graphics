@@ -9,8 +9,10 @@ Map Projection is the process of converting a 3D sphere into a 2D plane. Represe
 
 ### Mercator Projection
 
-$$X = \lambda  \\
-Y = \ln(\tan(\frac{\pi}{4} + \frac{\phi}{2}))$$
+$$
+X = \lambda  \\
+Y = \ln(\tan(\frac{\pi}{4} + \frac{\phi}{2}))
+$$
 
 <img src="./assets/1024px-Mercator_with_Tissot's_Indicatrices_of_Distortion.svg.png" alt="undefined" style="zoom: 20%;" />
 
@@ -18,8 +20,10 @@ Y = \ln(\tan(\frac{\pi}{4} + \frac{\phi}{2}))$$
 
 ### Lambert Cylindrical Projection
 
-$$X = \lambda  \\
-Y = \sin(\phi)$$
+$$
+X = \lambda  \\
+Y = \sin(\phi)
+$$
 
 <img src="./assets/Tissot_indicatrix_world_map_Lambert_cyl_equal-area_proj.svg" alt="Tissot_indicatrix_world_map_Lambert_cyl_equal-area_proj" style="zoom:12%;" />
 
@@ -52,15 +56,19 @@ Boggs generally repeated regions in two different lobes of the interrupted map i
 
 ### Lambert Conformal Conic Projection
 
-$$X = \rho \sin(\lambda - \lambda_0)  \\
-Y = \rho_0 - \rho \cos(\lambda - \lambda_0)$$
+$$
+X = \rho \sin(\lambda - \lambda_0)  \\
+Y = \rho_0 - \rho \cos(\lambda - \lambda_0)
+$$
 
 <img src="./assets/1024px-Conformal_Conic_with_Tissot's_Indicatrices_of_Distortion.svg.png" alt="undefined" style="zoom:25%;" />
 
 ## Azimuthal Equidistant Projection
 
-$$X = R \cos(\phi) \sin(\lambda - \lambda_0)  \\
-Y = R \left(\cos(\phi_0) \sin(\phi) - \sin(\phi_0) \cos(\phi) \cos(\lambda - \lambda_0)\right)$$
+$$
+X = R \cos(\phi) \sin(\lambda - \lambda_0)  \\
+Y = R \left(\cos(\phi_0) \sin(\phi) - \sin(\phi_0) \cos(\phi) \cos(\lambda - \lambda_0)\right)
+$$
 
 <img src="./assets/Azimuthal_equidistant_projection_with_Tissot's_indicatrix.png" alt="Tissot’s indicatrix applied to the azimuthal equidistant projection" style="zoom:30%;" />
 

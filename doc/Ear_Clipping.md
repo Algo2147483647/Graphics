@@ -15,6 +15,8 @@ The ear clipping algorithm is a simple and efficient method for triangulating si
 
 ## Process
 
+<img src="./assets/Ear-Clipping-Process13.png" alt="Ear Clipping Process[13] " style="zoom: 50%;" />
+
 - **Find an Ear:**
 
   - Start with any vertex of the polygon
