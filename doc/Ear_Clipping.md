@@ -28,7 +28,7 @@ The ear clipping algorithm is a simple and efficient method for triangulating si
 
     The determinate gives us as result greater than zero if the vertice $a, b, c$ form a convex angle at $b$; and less than zero otherwise.
 
-    (reference: ```https://stackoverflow.com/questions/40410743/polygon-triangulation-reflex-vertex```)
+    (reference: https://stackoverflow.com/questions/40410743/polygon-triangulation-reflex-vertex)
 
     ```cpp
     inline bool isEar(Point& a, Point& b, Point& c, vector<Point>& polygon) {

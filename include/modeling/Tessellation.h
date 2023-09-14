@@ -1,14 +1,12 @@
 #include <vector>
 
-// Regular hexagon Tessellation
-void HexagonTessellation(int numX, int numY, double gridLen, std::vector<Mat<float>>& points, std::vector<Mat<float>>& edges) {
-    points.clear();
-    edges. clear();
+using namespace std;
 
-    double
-        x0 = 0,
-        y0 = 0;
-    Mat<float> p(2), e(2, 2);
+// Regular hexagon Tessellation
+void HexagonTessellation(int numX, int numY, float gridLen, vector<vector<float>>& points, vector<vector<float>>& edges) {
+    float x0 = 0,
+          y0 = 0;
+    vector<float> p(2), e(2, 2);
 
     for (int i = 0; i < numY; i++) {
         if (i != 0) {
@@ -20,7 +18,7 @@ void HexagonTessellation(int numX, int numY, double gridLen, std::vector<Mat<flo
                 x0 -= sqrt(3) / 2 * gridLen;
         }
 
-        double x = x0;
+        float x = x0;
 
         for (int j = 0; j < numX; j++) {
             if (j != 0)
@@ -47,11 +45,9 @@ void HexagonTessellation(int numX, int numY, double gridLen, std::vector<Mat<flo
     }
 }
 
-// Random Rectangle Tessellation
-void RandomRectangleTessellation(
-	Mat<float>& area, std::vector<Mat<float>>& rects, int N, int sizeThreshold = 0, int randThreshold = 0
-) {
-	Mat<float> p(4), p1(4), p2(4);
+
+void RandomRectangleTessellation(vector<float>& area, vector<vector<float>>& rects, int N, int sizeThreshold = 0, int randThreshold = 0) {
+	vector<float> p(4), p1(4), p2(4);
 
 	rects.clear();
 	rects.push_back(area);
@@ -65,7 +61,7 @@ void RandomRectangleTessellation(
 			int ind = (i % 2 == 0) ? 0 : 1;
 
 			if (rects[j][ind + 2] > sizeThreshold) {
-				double ra = rand() / (double)RAND_MAX * (1 - 2 * randThreshold) + randThreshold;
+				float ra = rand() / (float)RAND_MAX * (1 - 2 * randThreshold) + randThreshold;
 				ra *= rects[j][ind + 2];
 
 				p1[ind + 2] = ra;

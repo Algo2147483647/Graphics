@@ -15,8 +15,8 @@ namespace Graphics {
 bool drawPoint  (Image& image, Mat<int>& Z_buf, int x = 0, int y = 0, int z = 0);
 bool drawPoint  (Image& image, Mat<int>& Z_buf, int x, int y, int z, double fx, double fy, double fz);
 void drawLine   (Image& image, Mat<int>& Z_buf, int sx = 0, int ex = 0, 
-                                                    int sy = 0, int ey = 0, 
-                                                    int sz = 0, int ez = 0);
+                                                int sy = 0, int ey = 0, 
+                                                int sz = 0, int ez = 0);
 void drawLine   (Image& image, Mat<int>& Z_buf, vector<vector<int>>& p, bool close = false);
 void drawTriangle 
                 (Image& image, Mat<int>& Z_buf, vector<int>& p1, vector<int>& p2, vector<int>& p3);

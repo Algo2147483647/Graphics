@@ -57,6 +57,20 @@ public:
 			   ARGB(R) << 16;
 	}
 
+	ARGB to_ARGB(INT8U R, INT8U G, INT8U B) {
+		return ARGB(B) << 0 | 
+			   ARGB(G) << 8 |
+			   ARGB(R) << 16;
+	}
+
+	ARGB to_ARGB(double A, double R, double G, double B) {
+		return
+			(ARGB)(B * 0xFF) << 0 +
+			(ARGB)(G * 0xFF) << 0 +
+			(ARGB)(R * 0xFF) << 16 +
+			(ARGB)(A * 0xFF) << 16;
+	}
+
 	static ARGB mul(ARGB a, double r) {
 		return
 			((ARGB)((a & 0x0000FF) * r) & 0x0000FF) |

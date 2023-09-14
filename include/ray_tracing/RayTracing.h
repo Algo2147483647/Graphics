@@ -119,7 +119,7 @@ namespace RayTracing {
 		}
 	}
 
-	void debug(const Camera& camera, const ObjectTree& objTree) {
+	inline void debug(const Camera& camera, const ObjectTree& objTree) {
 		Graphics::PaintSize = 1;
 		imgXY = Image(3000, 3000);
 		imgYZ = Image(3000, 3000);

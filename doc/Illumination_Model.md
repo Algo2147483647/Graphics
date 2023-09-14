@@ -45,3 +45,6 @@ $$\hat {\boldsymbol L}_{r,l} = 2 (\hat {\boldsymbol L}_{i,l} \cdot \hat {\boldsy
 | $\hat {\boldsymbol L}_{r,l}$ | direction of Reflect light of $l$ |
 | $\hat {\boldsymbol v}_{eye}$ | direction towards viewer |
 |||
+
+<img src="./assets/800px-Phong_components_version_4.png" alt="File:Phong components version 4.png" style="zoom: 50%;" />
+

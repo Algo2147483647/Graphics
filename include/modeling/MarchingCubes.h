@@ -270,7 +270,7 @@ static int MarchingCubes_TriTable[256][16] = {
 };
 
 inline vector<vector<double>>& MarchingCubes(
-	std::function<double(double, double, double)> f, 
+	function<double(double, double, double)> f, 
 	vector<double>& st, 
 	vector<double>& ed, 
 	vector<int>& N, 
@@ -367,9 +367,9 @@ inline void MarchingCubes(
 				y = ((i / N[0])% N[1] ) + ((vertex[j] & 0b10) >> 1),
 				z = ( i /(N[0] * N[1])) + ((vertex[j] & 0b100)>> 2);
 
-			if (x < 0 || x >= N[0]
-			||  y < 0 || y >= N[1]
-			||  z < 0 || z >= N[2]) continue;
+			if (x < 0 || x >= N[0] || 
+				y < 0 || y >= N[1] ||  
+				z < 0 || z >= N[2]) continue;
 
 			if ((val[j] = X[z][y][x]) <= 0)
 				cubeindex |= (1 << j);

@@ -204,8 +204,10 @@ void Graphics::drawTriangle(Image& image, Mat<int>& Z_buf, vector<double>& p1, v
     ARGB color = PaintColor;
     {
         vector<double> d1(3), d2(3);
-        Matrix::sub(d1, p3, p1);
-        Matrix::sub(d2, p2, p1);
+        for (int i = 0; i < 3; i++) {
+            d1[i] = p3[i] - p1[i];
+            d1[i] = p2[i] - p1[i];
+        }
 
         double a = Illumination::Phong(
             d1[1] * d2[2] - d1[2] * d2[1],
@@ -352,8 +354,8 @@ void Graphics::drawFunction(Image& image, Mat<int>& Z_buf, int xs, int ys, int z
                 y = p[1] + d[i][1],
                 z = p[2] + d[i][2];
 
-            if (x < 0 || x >= image.rows ||
-                y < 0 || y >= image.cols ||
+            if (x < 0 || x >= image.rows() ||
+                y < 0 || y >= image.cols() ||
                 M.find({ x, y, z }) != M.end()) {
                 e = DBL_MAX;
                 continue;

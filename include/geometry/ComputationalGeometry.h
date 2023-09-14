@@ -5,19 +5,18 @@
 #include <float.h>
 #include <algorithm>
 #include <vector>
-#include "Matrix.h"
-
-using namespace Matrix;
 
 #define EPS 10e-4
+
+using namespace std;
 
 namespace Geometry {
 
 /****************************************************************
 				是否在三角内
 ****************************************************************/
-inline bool inTriangle(Mat<float>& p0, Mat<float>& TriP1, Mat<float>& TriP2, Mat<float>& TriP3) {
-	Mat<float> tmp, edge[2];
+inline bool inTriangle(vector<float>& p0, vector<float>& TriP1, vector<float>& TriP2, vector<float>& TriP3) {
+	vector<float> tmp, edge[2];
 	sub(edge[0],TriP2, TriP1);
 	sub(edge[1],TriP3, TriP1);
 	sub(tmp,       p0, TriP1);
@@ -44,8 +43,8 @@ inline bool inTriangle(Mat<float>& p0, Mat<float>& TriP1, Mat<float>& TriP2, Mat
 		| x4²+y4²  x4  y4  1 |
 *	[几何解释]: 通过把平面点提升到三维的抛物面中，由于抛物面被平面所截的截面为圆形，四点共面即使共圆，也可以用四面体的体积判断是否共圆。
 ****************************************************************/
-inline bool onCircle(Mat<float> Points[]) {
-	Mat<float> mat(4, 4);
+inline bool onCircle(vector<float> Points[]) {
+	vector<float> mat(4, 4);
 	for (int i = 0; i < 4; i++) {
 		mat(i, 0) = dot(Points[i], Points[i]);
 		mat(i, 1) = Points[i][0];
@@ -72,8 +71,8 @@ inline bool onCircle(Mat<float> Points[]) {
 							CircumCircle 三角形外接圆
 *	外接圆圆心: 即. 三点确定圆方程问题， 也是任意两边的垂直平分线的交点.直接用 ThreePointsToCircle()方法
 ****************************************************************/
-inline Mat<float>& ThreePoints2Circle(Mat<float> Points[], Mat<float>& center, double& R) {
-	Mat<float> mat(4, 4);
+inline vector<float>& ThreePoints2Circle(vector<float> Points[], vector<float>& center, double& R) {
+	vector<float> mat(4, 4);
 	for (int i = 0; i < 3; i++) {
 		mat(i + 1, 0) = dot(Points[i], Points[i]);
 		mat(i + 1, 1) = Points[i][0];
@@ -91,23 +90,7 @@ inline Mat<float>& ThreePoints2Circle(Mat<float> Points[], Mat<float>& center, d
 	return center = { -b / (2 * a), -c / (2 * a) };
 }
 
-/****************************************************************
-				球面均匀点分布
-*	[Referance]:
-		[1] Thanks and copyright for https://github.com/SebLague/Boids
-****************************************************************/
-inline Mat<float>* getSphereFibonacciPoint(int n) {
-	Mat<float>* point = (Mat<float>*)malloc(n * sizeof(Mat<float>));
-	memset(point, 0, n * sizeof(Mat<float>));
-	double goldenRatio = (1 + sqrt(5)) / 2, angleIncrement = M_PI * 2 * goldenRatio;	// 黄金分割点
-	for (int i = 0; i < n; i++) {
-		double t = (double)i / n, inclination = acos(1 - 2 * t), azimuth = angleIncrement * i;
-		point[i].zero(3);
-		point[i][0] = sin(inclination) * cos(azimuth);
-		point[i][1] = sin(inclination) * sin(azimuth);
-		point[i][2] = cos(inclination);
-	} return point;
-}
+
 
 }
 #endif

@@ -3,11 +3,12 @@
 /*
  * 画点
  */ 
-bool Graphics::drawPoint (Mat<ARGB>& image, Mat<int>* Z_buf, vector<int>& p)
+bool Graphics::drawPoint(Image& image, vector<Mat<int>>& Z_buf, vector<int>& p)
 {
 	int dim = p.size();
 
-    if (image.isOut(p[0], p[1]))
+	if (p[0] < 0 || p[0] >= image.rows() ||
+		p[1] < 0 || p[1] >= image.cols())
         return false;
 
 	for (int d = 2; d < dim; d++)
@@ -17,12 +18,12 @@ bool Graphics::drawPoint (Mat<ARGB>& image, Mat<int>* Z_buf, vector<int>& p)
     image(p[0], p[1]) = PaintColor;
 
 	for (int d = 2; d < dim; d++)
-	    Z_buf[d-2] = p[d]; 
+	    Z_buf[d-2](p[0], p[1]) = p[d];
 
     return true;
 }
 
-void Graphics::drawPoint(Mat<ARGB>& image, vector<double>& p0) {
+void Graphics::drawPoint(Image& image, vector<double>& p0) {
 	static vector<double> point;
 
 	point.resize(TransformMat.rows, 0);
@@ -42,7 +43,7 @@ void Graphics::drawPoint(Mat<ARGB>& image, vector<double>& p0) {
  * 画线
  */
 
-void Graphics::drawLine (Mat<ARGB>& image, Mat<int>* Z_buf, vector<double>& st, vector<double>& ed)
+void Graphics::drawLine (Image& image, vector<Mat<int>>& Z_buf, vector<double>& st, vector<double>& ed)
 {
 	int dim = st.size();
 	vector<double>
@@ -52,13 +53,13 @@ void Graphics::drawLine (Mat<ARGB>& image, Mat<int>* Z_buf, vector<double>& st, 
 		p = st;
 	vector<int> p_int(dim);
 
-	Matrix::sub(delta, ed, st);
+	sub(delta, ed, st);
  
 	for (int d = 0; d < dim; d++) {
 		inc[d] = delta[d] == 0 ? 0 : (delta[d] > 0 ? 1 : -1);
 		delta[d] *= inc[d];    // |Δ| 
 	}
-	int max_delta = Matrix::max(delta);
+	int max_delta = max(delta);
 
 	for (int i = 0; i < p.size(); i++)
 		p_int[i] = (int) p[i];
@@ -77,11 +78,11 @@ void Graphics::drawLine (Mat<ARGB>& image, Mat<int>* Z_buf, vector<double>& st, 
 }
 
 
-void Graphics::drawLine(Mat<ARGB>& image, vector<double>& st, vector<double>& ed) {
+void Graphics::drawLine(Image& image, vector<double>& st, vector<double>& ed) {
 	static vector<double> p1, p2;
 
-	p1.resize(TransformMat.rows, 0);
-	p2.resize(TransformMat.rows, 0);
+	p1.resize(TransformMat.rows(), 0);
+	p2.resize(TransformMat.rows(), 0);
 
 	p1[0] = 1;
 	for (int i = 0; i < st.size(); i++)
@@ -95,8 +96,8 @@ void Graphics::drawLine(Mat<ARGB>& image, vector<double>& st, vector<double>& ed
 	Matrix::mul(p2, TransformMat, p2);
 
 	drawLine(image, 
-		image.rows / 2 + p1[1], image.rows / 2 + p1[2],
-		image.cols / 2 + p2[1], image.cols / 2 + p2[2]
+		image.rows() / 2 + p1[1], image.rows() / 2 + p1[2],
+		image.cols() / 2 + p2[1], image.cols() / 2 + p2[2]
 	);
 }
 
@@ -110,7 +111,7 @@ void Graphics::drawLine(Mat<ARGB>& image, vector<double>& st, vector<double>& ed
 		[1] 以二进制顺序遍历所有顶点
 			[2] 连接该点和所有比该点编码多1的点
 ----------------------------------------------------------------*/
-void Graphics::drawSuperCuboid(Mat<ARGB>& image, vector<double>& pMin, vector<double>& pMax) {
+void Graphics::drawSuperCuboid(Image& image, vector<double>& pMin, vector<double>& pMax) {
 	unsigned int Dim = pMin.size(), maxCode = (1 << Dim) - 1;
 	vector<double> st, ed;
 
@@ -137,7 +138,7 @@ void Graphics::drawSuperCuboid(Mat<ARGB>& image, vector<double>& pMin, vector<do
 		[1] 计算每一个格点的坐标
 		[2] 绘制该格点对应的, 各维度方向的从min[dim] -> max[dim]的直线段
 ---------------------------------------------------------------------------*/
-void Graphics::drawGrid(Mat<ARGB>& image, vector<double>& delta, vector<double>& max, vector<double>& min) {
+void Graphics::drawGrid(Image& image, vector<double>& delta, vector<double>& max, vector<double>& min) {
 	int times = 1, cur;
 	for (int dim = 0; dim < min.size(); dim++) 
 		times *= (max[dim] - min[dim]) / delta[dim] + 1;

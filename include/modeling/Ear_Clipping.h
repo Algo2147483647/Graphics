@@ -4,12 +4,14 @@
 #include <vector>
 #include <cmath>
 #include <functional>
+#include <Eigen/Dense>
 
 using namespace std;
+using namespace Eigen;
 
 namespace Graphics {
 
-typedef vector<double> Point;   // x, y, z
+typedef Vector3f Point;   // x, y, z
 typedef vector<double> triangle;   // x, y, z
 
 inline bool isEar(Point& a, Point& b, Point& c, vector<Point>& polygon) {

@@ -10,7 +10,9 @@
 - [Rasterization](./Rasterization.md)
 - [Ray Tracing](./Ray_Tracing.md)
 
-- [Marching Cubes](./Marching_Cubes.md)
+# Modeling
+
+
 
 # Translation
 

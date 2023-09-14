@@ -1,12 +1,10 @@
 #include "Modeling.h"
 
-/*
- * 存储文件
- */
+
 void Modeling::writeModel(const char* fileName) {
 	char head[80] = { 0 };
 	Mat<float> p[3], fv;
-	Mat<double> t;
+	Mat<float> t;
 
 	p[0].resize(3, Object.size());
 	p[1].resize(3, Object.size());
@@ -29,19 +27,77 @@ void Modeling::writeModel(const char* fileName) {
 	Graphics::stlWrite(fileName, head, fv, p[0], p[1], p[2], attr);
 }
 
-/*
- * 旋转体
- */
-void Modeling::Rotator(Point& center, Point& axis, vector<Point>& f, int pointNum, double st, double ed, int isClosed) {
-	double dAngle = (ed - st) / pointNum;
-	Point p1(3), p2(3), p3(3), p4(3);
-	Mat<double> rotateMat_0(3, 3), rotateMat(3, 3), preRotateMat(3, 3), firstRotateMat(3, 3);
-	vector<double> direction(3), delta(3), direction_2(3);
 
-	normalize(axis);
+void Modeling::Rotator(Point& center, Vector3f& axis, vector<Point>& f, int pointNum, float st, float ed) {
+	float dAngle = (ed - st) / pointNum;
+	Point p1, p2, p3, p4;
+	Mat<float> rotateMat_0(3, 3), rotateMat(3, 3), preRotateMat(3, 3), firstRotateMat(3, 3);
+	Vector3f direction, delta, direction_2;
+
+	axis.normalize();
 
 	// calculate the first rotate matrix
-	double
+	float
+		x = axis[0],
+		y = axis[1],
+		z = axis[2],
+		sign = x * y > 0 ? -1 : 1,
+		e = sqrt(1 - z * z),
+		b = -x * z / e,
+		d = -y * z / e,
+		a = sign * abs(y / e),
+		c = abs(x / e);
+
+	if (e < 1e-4)
+		E(rotateMat_0);
+	else
+		rotateMat_0 <<
+		a, b, x,
+		c, d, y,
+		0, e, z;
+
+	for (int i = 0; i <= pointNum; i++) {
+		float angle = st + dAngle * i;
+		delta = { cos(angle), sin(angle), 0 };
+		direction = (rotateMat_0 * delta).normalized();
+		normalize(cross(direction_2, axis, direction));
+
+		// calculate rotate matrix
+		rotateMat <<
+			direction[0], axis[0], direction_2[0],
+			direction[1], axis[1], direction_2[1],
+			direction[2], axis[2], direction_2[2];
+
+		// generate
+		if (i != 0) {
+			for (int j = 1; j < f.size(); j++) {
+				p3 = p1 = { f[j - 1][0], f[j - 1][1], 0 };
+				p4 = p2 = { f[j][0],     f[j][1],     0 };
+
+				p1 = center + rotateMat * p1;
+				p2 = center + rotateMat * p2;
+				p3 = center + preRotateMat * p3;
+				p4 = center + preRotateMat * p4;
+				Quadrangle(p1, p2, p3, p4);
+			}
+		}
+		preRotateMat = rotateMat;
+		if (i == 0)
+			firstRotateMat = rotateMat;
+	}
+}
+
+
+void Modeling::Rotator(Point& center, Point& axis, vector<Point>& f, int pointNum, float st, float ed, int isClosed) {
+	float dAngle = (ed - st) / pointNum;
+	Point p1, p2, p3, p4;
+	Mat<float> rotateMat_0(3, 3), rotateMat(3, 3), preRotateMat(3, 3), firstRotateMat(3, 3);
+	Vector3f direction, delta, direction_2;
+
+	axis.normalize();
+
+	// calculate the first rotate matrix
+	float
 		x = axis[0],
 		y = axis[1],
 		z = axis[2],
@@ -55,24 +111,23 @@ void Modeling::Rotator(Point& center, Point& axis, vector<Point>& f, int pointNu
 	if (e < 1e-4)
 		E(rotateMat_0);
 	else 
-		rotateMat_0 = {
+		rotateMat_0 <<
 			a, b, x,
 			c, d, y,
 			0, e, z
-		};
+		;
 
 	for (int i = 0; i <= pointNum; i++) {
-		double angle = st + dAngle * i;
+		float angle = st + dAngle * i;
 		delta = { cos(angle), sin(angle), 0 };
-		normalize(mul(direction, rotateMat_0, delta));
+		direction = (rotateMat_0 * delta).normalized();
 		normalize(cross(direction_2, axis, direction));
 
 		// calculate rotate matrix
-		rotateMat = {
+		rotateMat <<
 			direction[0], axis[0], direction_2[0],
 			direction[1], axis[1], direction_2[1],
-			direction[2], axis[2], direction_2[2]
-		};
+			direction[2], axis[2], direction_2[2];
 
 		// generate
 		if (i != 0) {
@@ -80,16 +135,10 @@ void Modeling::Rotator(Point& center, Point& axis, vector<Point>& f, int pointNu
 				p3 = p1 = { f[j - 1][0], f[j - 1][1], 0 };
 				p4 = p2 = { f[j][0],     f[j][1],     0 };
 
-				mul(p1, rotateMat, p1);
-				mul(p2, rotateMat, p2);
-				mul(p3, preRotateMat, p3);
-				mul(p4, preRotateMat, p4);
-
-				add(p1, p1, center);
-				add(p2, p2, center);
-				add(p3, p3, center);
-				add(p4, p4, center);
-
+				p1 = center + rotateMat * p1;
+				p2 = center + rotateMat * p2;
+				p3 = center + preRotateMat * p3;
+				p4 = center + preRotateMat * p4;
 				Triangle(p1, p2, p3);
 				Triangle(p4, p3, p2);
 			}
@@ -102,16 +151,16 @@ void Modeling::Rotator(Point& center, Point& axis, vector<Point>& f, int pointNu
 	// closed
 	if (isClosed) {
 		Point p1, p2, p3;
-		vector<vector<double>> tris;
+		vector<vector<float>> tris;
 
 		Graphics::earClippingTriangulation(f, tris);
 
 		int n = tris.size();
 		
 		for (int i = 0; i < n; i++) {
-			mul(p1, rotateMat, p1 = { tris[i][0], tris[i][1], tris[i][2] });
-			mul(p2, rotateMat, p2 = { tris[i][3], tris[i][4], tris[i][5] });
-			mul(p3, rotateMat, p3 = { tris[i][6], tris[i][7], tris[i][8] });
+			p1 = rotateMat * Vector3f(tris[i][0], tris[i][1], tris[i][2]);
+			p2 = rotateMat * Vector3f(tris[i][3], tris[i][4], tris[i][5]);
+			p3 = rotateMat * Vector3f(tris[i][6], tris[i][7], tris[i][8]);
 
 			Object.push_back({
 				p1[0] + center[0], p1[1] + center[1], p1[2] + center[2],
@@ -119,9 +168,9 @@ void Modeling::Rotator(Point& center, Point& axis, vector<Point>& f, int pointNu
 				p3[0] + center[0], p3[1] + center[1], p3[2] + center[2]
 			});
 
-			mul(p1, firstRotateMat, p1 = { tris[i][0], tris[i][1], tris[i][2] });
-			mul(p2, firstRotateMat, p2 = { tris[i][3], tris[i][4], tris[i][5] });
-			mul(p3, firstRotateMat, p3 = { tris[i][6], tris[i][7], tris[i][8] });
+			p1 = firstRotateMat * Vector3f(tris[i][0], tris[i][1], tris[i][2]);
+			p2 = firstRotateMat * Vector3f(tris[i][3], tris[i][4], tris[i][5]);
+			p3 = firstRotateMat * Vector3f(tris[i][6], tris[i][7], tris[i][8]);
 
 			Object.push_back({
 				p1[0] + center[0], p1[1] + center[1], p1[2] + center[2],
@@ -133,18 +182,12 @@ void Modeling::Rotator(Point& center, Point& axis, vector<Point>& f, int pointNu
 }
 
 
-/*
- * 平移体
- */
 void Modeling::Translator(Point& st, Point& ed, vector<Point>& f, int isClosed) {
 	// calculate rotate matrix
-	Mat<double> rotateMat(3, 3);
-	vector<double> direction(3);
+	Mat<float> rotateMat(3, 3);
+	Vector3f direction = (ed - st).normalized();
 
-	sub(direction, ed, st);
-	normalize(direction);
-
-	double
+	float
 		x = direction[0],
 		y = direction[1],
 		z = direction[2],
@@ -158,29 +201,25 @@ void Modeling::Translator(Point& st, Point& ed, vector<Point>& f, int isClosed) 
 	if (e < 1e-4)
 		E(rotateMat);
 	else
-		rotateMat = {
+		rotateMat <<
 			a, b, x,
 			c, d, y,
-			0, e, z
-	};
+			0, e, z;
 
 	// generate
-	Point stPoint(3), edPoint(3), preStPoint(3), preEdPoint(3);
+	Point stPoint, edPoint, preStPoint, preEdPoint;
 
 	int fn = f.size();
-	Point pt(3);
+	Point pt;
 
 	for (int i = 0; i < fn; i++) {
-		pt = { f[i][0], f[i][1], 0 };
+		pt = rotateMat * Vector3f(f[i][0], f[i][1], 0);
+		stPoint = st + pt;
+		edPoint = ed + pt;
 
-		mul(pt, rotateMat, pt);
-		add(stPoint, st, pt);
-		add(edPoint, ed, pt);
-
-		if (i != 0) {
-			Triangle(stPoint,    preStPoint, edPoint);
-			Triangle(preStPoint, preEdPoint, edPoint);
-		}
+		if (i != 0) 
+			Quadrangle(stPoint, preStPoint, edPoint, preEdPoint);
+		
 		preStPoint = stPoint;
 		preEdPoint = edPoint;
 	}
@@ -188,16 +227,16 @@ void Modeling::Translator(Point& st, Point& ed, vector<Point>& f, int isClosed) 
 	// closed
 	if (isClosed) {
 		Point p1, p2, p3;
-		vector<vector<double>> tris;
+		vector<vector<float>> tris;
 
 		Graphics::earClippingTriangulation(f, tris);
 
 		int n = tris.size();
 
 		for (int i = 0; i < n; i++) {
-			mul(p1, rotateMat, p1 = { tris[i][0], tris[i][1], tris[i][2] });
-			mul(p2, rotateMat, p2 = { tris[i][3], tris[i][4], tris[i][5] });
-			mul(p3, rotateMat, p3 = { tris[i][6], tris[i][7], tris[i][8] });
+			p1 = rotateMat * Vector3f(tris[i][0], tris[i][1], tris[i][2]);
+			p2 = rotateMat * Vector3f(tris[i][3], tris[i][4], tris[i][5]);
+			p3 = rotateMat * Vector3f(tris[i][6], tris[i][7], tris[i][8]);
 
 			Object.push_back({
 				p1[0] + st[0], p1[1] + st[1], p1[2] + st[2],
@@ -212,6 +251,7 @@ void Modeling::Translator(Point& st, Point& ed, vector<Point>& f, int isClosed) 
 		}
 	}
 }
+
 
 void Modeling::Translator(vector<Point>& path, vector<Point>& f, int isClosed) {
 	int n = path.size();
@@ -229,21 +269,21 @@ void Modeling::Translator(vector<Point>& path, vector<Point>& f, int isClosed) {
 	}
 }
 
-/* Rotator + Translator */
+
 void Modeling::Rotator_Translator(
 	Point& center, Point& axis, vector<Point>& f,
-	vector<double>& direction_, double length,
-	int pointNum, double st, double ed
+	vector<float>& direction_, float length,
+	int pointNum, float st, float ed
 ) {
-	double dAngle = (ed - st) / pointNum;
-	Point p(3), p1(3), p2(3), p3(3), p4(3);
-	Mat<double> rotateMat_0(3, 3), rotateMat(3, 3), preRotateMat(3, 3);
-	vector<double> direction(3), delta(3), direction_2(3);
+	float dAngle = (ed - st) / pointNum;
+	Point p, p1, p2, p3, p4;
+	Mat<float> rotateMat_0(3, 3), rotateMat(3, 3), preRotateMat(3, 3);
+	Vector3f direction, delta, direction_2;
 
-	normalize(axis);
+	axis.normalize();
 
 	// calculate the first rotate matrix
-	double
+	float
 		x = axis[0],
 		y = axis[1],
 		z = axis[2],
@@ -257,24 +297,22 @@ void Modeling::Rotator_Translator(
 	if (e < 1e-4)
 		E(rotateMat_0);
 	else
-		rotateMat_0 = {
+		rotateMat_0 <<
 			a, b, x,
 			c, d, y,
-			0, e, z
-	};
+			0, e, z;
 
 	for (int i = 0; i <= pointNum; i++) {
-		double angle = st + dAngle * i;
+		float angle = st + dAngle * i;
 		delta = { cos(angle), sin(angle), 0 };
-		normalize(mul(direction, rotateMat_0, delta));
+		direction = (rotateMat_0 * delta).normalized();
 		normalize(cross(direction_2, axis, direction));
 
 		// calculate rotate matrix
-		rotateMat = {
+		rotateMat <<
 			direction[0], axis[0], direction_2[0],
 			direction[1], axis[1], direction_2[1],
-			direction[2], axis[2], direction_2[2]
-		};
+			direction[2], axis[2], direction_2[2];
 
 		// generate
 		if (i != 0) {
@@ -292,10 +330,10 @@ void Modeling::Rotator_Translator(
 				add(p3, p3, center);
 				add(p4, p4, center);
 
-				add(p1, p1, mul(p, i / (double)pointNum * length, direction_));
-				add(p2, p2, mul(p, i / (double)pointNum * length, direction_));
-				add(p3, p3, mul(p, (i - 1) / (double)pointNum * length, direction_));
-				add(p4, p4, mul(p, (i - 1) / (double)pointNum * length, direction_));
+				add(p1, p1, mul(p, i / (float)pointNum * length, direction_));
+				add(p2, p2, mul(p, i / (float)pointNum * length, direction_));
+				add(p3, p3, mul(p, (i - 1) / (float)pointNum * length, direction_));
+				add(p4, p4, mul(p, (i - 1) / (float)pointNum * length, direction_));
 
 				Triangle(p1, p2, p3);
 				Triangle(p4, p3, p2);
@@ -305,13 +343,7 @@ void Modeling::Rotator_Translator(
 	}
 }
 
-/* --------------------------------
- *		平面图形
- * -------------------------------- */
 
-/*
- * Triangle
- */
 void Modeling::Triangle(Point& p1, Point& p2, Point& p3) {
 	triangle tri(9);
 
@@ -324,11 +356,9 @@ void Modeling::Triangle(Point& p1, Point& p2, Point& p3) {
 	Object.push_back(tri);
 }
 
-/* 
- * Rectangle
- */
-void Modeling::Rectangle(Point& c, double X, double Y) {
-	Point p1(3), p2(3), p3(3);
+
+void Modeling::Rectangle(Point& c, float X, float Y) {
+	Point p1, p2, p3;
 	Triangle(
 		p1 = { c[0] + X / 2, c[1] + Y / 2, c[2] },
 		p2 = { c[0] + X / 2, c[1] - Y / 2, c[2] },
@@ -341,18 +371,13 @@ void Modeling::Rectangle(Point& c, double X, double Y) {
 	);
 }
 
-/*
- * Quadrangle
- */
+
 void Modeling::Quadrangle(Point& p1, Point& p2, Point& p3, Point& p4) {
 	Triangle(p1, p2, p3);
 	Triangle(p1, p3, p4);
 }
 
-/* 
- * Polygon 
- */
-// Convex Polygon 
+
 void Modeling::ConvexPolygon(vector<Point>& p) {
 	int n = p.size();
 
@@ -362,51 +387,43 @@ void Modeling::ConvexPolygon(vector<Point>& p) {
 }
 
 void Modeling::Polygon(Point& c, vector<Point>& p) {
-	vector<vector<double>> tris;
+	vector<vector<float>> tris;
 
 	Graphics::earClippingTriangulation(p, tris);
 	addTriangleSet(c, tris);
 }
 
-/* 
- * 画圆 
- */
-void Modeling::Circle(Point& center, double r, int pointNum, double angleSt, double angleEd) {
-	double dAngle = (angleEd - angleSt) / pointNum;
-	Point ps(3), pe(3);
+
+void Modeling::Circle(Point& center, float r, int pointNum, float angleSt, float angleEd) {
+	float dAngle = (angleEd - angleSt) / pointNum;
+	Point ps, pe;
 
 	for (int i = 0; i < pointNum; i++) {
-		double theta = i * dAngle;
-		ps = {
+		float theta = i * dAngle;
+		ps = Point(
 			r * cos(theta + angleSt),
 			r * sin(theta + angleSt),
 			0
-		};
-		pe = {
+		) + center;
+		pe = Point(
 			r * cos(theta + angleSt + dAngle),
 			r * sin(theta + angleSt + dAngle),
 			0
-		};
-		Triangle(
-			add(ps, ps, center),
-			add(pe, pe, center),
-			center
-		);
+		) + center;
+		Triangle(ps, pe, center);
 	}
 }
 
-/* 
- * 画曲面 
- */
-void Modeling::Surface(Mat<double>& z, double xs, double xe, double ys, double ye, Point* direct) {
-	Point p(3), pl(3), pu(3), plu(3); 
 
-	double 
-		dx = (xe - xs) / z.rows,
-		dy = (ye - ys) / z.cols;
+void Modeling::Surface(Mat<float>& z, float xs, float xe, float ys, float ye, Point* direct) {
+	Point p, pl, pu, plu; 
 
-	for (int y = 0; y < z.cols; y++) {
-		for (int x = 0; x < z.rows; x++) {
+	float 
+		dx = (xe - xs) / z.rows(),
+		dy = (ye - ys) / z.cols();
+
+	for (int y = 0; y < z.cols(); y++) {
+		for (int x = 0; x < z.rows(); x++) {
 			if (z(x, y) == HUGE_VAL) 
 				continue;
 
@@ -420,8 +437,7 @@ void Modeling::Surface(Mat<double>& z, double xs, double xe, double ys, double y
 				z(x - 1, y) == HUGE_VAL ||  
 				z(x, y - 1) == HUGE_VAL ||  
 				z(x - 1, y - 1) == HUGE_VAL
-			) 
-				continue;
+			) continue;
 
 			pl = { 
 				xs + (x - 1) * dx, 
@@ -446,13 +462,6 @@ void Modeling::Surface(Mat<double>& z, double xs, double xe, double ys, double y
 }
 
 
-/* --------------------------------
- *		三维图形
- * -------------------------------- */
-
-/* 
- * 画四面体 
- */
 void Modeling::Tetrahedron(Point& p1, Point& p2, Point& p3, Point& p4) {
 	Triangle(p1, p2, p3);
 	Triangle(p2, p3, p4);
@@ -460,9 +469,7 @@ void Modeling::Tetrahedron(Point& p1, Point& p2, Point& p3, Point& p4) {
 	Triangle(p4, p1, p2);
 }
 
-/* 
- * 画矩体 
- */
+
 void Modeling::Cuboid(Point& pMin, Point& pMax) {
 	Point pMinTmp[3], pMaxTmp[3];
 	for (int i = 0; i < 3; i++) {
@@ -476,19 +483,18 @@ void Modeling::Cuboid(Point& pMin, Point& pMax) {
 	}
 }
 
-void Modeling::Cuboid(Point& center, double X, double Y, double Z) {
-	Point delta(3), pMax(3), pMin(3);
-	delta = { X / 2, Y / 2, Z / 2 };
 
-	add(pMax, center, delta);
-	sub(pMin, center, delta);
-
+void Modeling::Cuboid(Point& center, float X, float Y, float Z) {
+	Point delta = { X / 2, Y / 2, Z / 2 };
+	Point pMax = center + delta;
+	Point pMin = center - delta;
 	Cuboid(pMin, pMax);
 }
 
-void Modeling::Cuboid(Point& center, vector<double>& direction, double L, double W, double H) {
+
+void Modeling::Cuboid(Point& center, Vector3f& direction, float L, float W, float H) {
 	vector<Point> f;
-	vector<double> p(3), st(3), ed(3);
+	Point p, st, ed;
 	f = {
 		{-W / 2,-H / 2},
 		{+W / 2,-H / 2},
@@ -497,26 +503,26 @@ void Modeling::Cuboid(Point& center, vector<double>& direction, double L, double
 		{-W / 2,-H / 2},
 	};
 
-	normalize(direction);
+	direction.normalize();
 
-	add(ed, center, mul(p, +L / 2.0, direction));
-	add(st, center, mul(p, -L / 2.0, direction));
+	ed = center + direction * ( L / 2.0);
+	st = center + direction * (-L / 2.0);
 	Translator(st, ed, f);
 }
 
-/* 画圆台 */
-void Modeling::Frustum(Point& st, Point& ed, double Rst, double Red, int pointNum) {
+
+void Modeling::Frustum(Point& st, Point& ed, float Rst, float Red, int pointNum) {
 	;
 }
 
-/* 画球 */
-void Modeling::Sphere(Point& center, double r, int pointNum) {
-	vector<double> st(3), ed(3);
-	vector<int> N;
-	vector<vector<double>> triangleSet;
-	double more = r / pointNum * 3;
 
-	Graphics::MarchingCubes([&](double x, double y, double z) {
+void Modeling::Sphere(Point& center, float r, int pointNum) {
+	Vector3f st, ed;
+	vector<int> N;
+	vector<vector<float>> triangleSet;
+	float more = r / pointNum * 3;
+
+	Graphics::MarchingCubes([&](float x, float y, float z) {
 		return r * r - (x * x + y * y + z * z); 
 		},
 		st = {-r - more,-r - more,-r - more },
@@ -528,20 +534,21 @@ void Modeling::Sphere(Point& center, double r, int pointNum) {
 	addTriangleSet(center, triangleSet);
 }
 
-void Modeling::Sphere(Point& center, double r, int ThetaNum, int PhiNum, 
-	double thetaSt, double thetaEd, 
-	double phiSt, double phiEd
+
+void Modeling::Sphere(Point& center, float r, int ThetaNum, int PhiNum, 
+	float thetaSt, float thetaEd, 
+	float phiSt, float phiEd
 ) {
-	Point point(3), pointU(3), pointL(3), pointUL(3);
-	double
+	Point point, pointU, pointL, pointUL;
+	float
 		dTheta = (thetaEd - thetaSt) / ThetaNum,
 		dPhi   = (phiEd - phiSt)     / PhiNum;
 
 	for (int i = 1; i <= ThetaNum; i++) {
-		double theta = thetaSt + i * dTheta;
+		float theta = thetaSt + i * dTheta;
 
 		for (int j = 1; j <= PhiNum; j++) {
-			double phi = phiSt + j * dPhi;
+			float phi = phiSt + j * dPhi;
 
 			point = {
 				r * cos(phi) * cos(theta) + center[0],
@@ -570,9 +577,7 @@ void Modeling::Sphere(Point& center, double r, int ThetaNum, int PhiNum,
 	}
 }
 
-/* --------------------------------
- *		Modifier
- * -------------------------------- */
+
 void Modeling::addTriangleSet(Point& center, vector<triangle>& tris) {
 	int n = tris.size();
 
@@ -581,13 +586,14 @@ void Modeling::addTriangleSet(Point& center, vector<triangle>& tris) {
 			tris[i][0] + center[0], tris[i][1] + center[1], tris[i][2] + center[2],
 			tris[i][3] + center[0], tris[i][4] + center[1], tris[i][5] + center[2],
 			tris[i][6] + center[0], tris[i][7] + center[1], tris[i][8] + center[2],
-			});
+		});
 	}
 }
 
-void Modeling::Array(int count, double dx, double dy, double dz) {
+
+void Modeling::Array(int count, float dx, float dy, float dz) {
 	int n = Object.size();
-	Point p1(3), p2(3), p3(3), delta(3);
+	Point p1, p2, p3, delta;
 	delta = { dx, dy, dz };
 
 	for (int k = 1; k < count; k++) {

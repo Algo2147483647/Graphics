@@ -8,8 +8,8 @@
 using namespace std;
 
 namespace Graphics {
-    inline void RGB2HSV(double& r, double& g, double& b,
-        double& h, double& s, double& v) {
+    inline void RGB2HSV(double r, double g, double b,
+                        double& h, double& s, double& v) {
         double max_val = std::max({ r, g, b });
         double min_val = std::min({ r, g, b });
         double diff = max_val - min_val;
@@ -44,8 +44,8 @@ namespace Graphics {
         }
     }
 
-    inline void HSV2RGB(double& h, double& s, double& v,
-        double& r, double& g, double& b) {
+    inline void HSV2RGB(double h, double s, double v,
+                        double& r, double& g, double& b) {
 
         if (s == 0.0) {
             r = v;

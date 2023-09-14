@@ -1,15 +1,14 @@
 #ifndef GRAPHICS_PLOT_H
 #define GRAPHICS_PLOT_H
 
-#include "Mat.h"
-#include "RGB.h"
+#include "Image.h"
 
 namespace Graphics {
 
 	/* 
 	 * 画等高线
 	 */
-	void contour(Mat<ARGB>& image, Mat<float>& map, const int N) {
+	void contour(Image& image, Mat<float>& map, const int N) {
 		int x_step[] = { 1, 0, 1 },
 			y_step[] = { 0, 1, 1 };
 		double 
@@ -68,27 +67,6 @@ namespace Graphics {
 		}
 	}
 
-	/*---------------- 色谱 ----------------*/
-	ARGB colorlist(double index, int model = 1)
-	{
-		double A = 0, R = 0, G = 0, B = 0, a = index, b = 1 - a;
-		switch (model)
-		{
-		case 1: {
-			B = a <= 9.0 / 16 ? (a < 1.0 / 16 ? 0.5 + 8 * a : (a > 6.0 / 16 ? 1 - (16 / 3.0) * (a - 6.0 / 16) : 1)) : 0;
-			R = b <= 9.0 / 16 ? (b < 1.0 / 16 ? 0.5 + 8 * b : (b > 6.0 / 16 ? 1 - (16 / 3.0) * (b - 6.0 / 16) : 1)) : 0;
-			G = (a >= 3.0 / 16 && b >= 3.0 / 16) ? (a < 6.0 / 16 ? (16 / 3.0) * (a - 3.0 / 16) : (b < 6.0 / 16 ? (16 / 3.0) * (b - 3.0 / 16) : 1)) : 0;
-		}break;
-		case 2: {
-			B = a <= 9.0 / 16 ? (a < 1.0 / 16 ? 0.5 + 8 * a : (a > 6.0 / 16 ? 1 - (16 / 3.0) * (a - 6.0 / 16) : 1)) : 0;
-			R = b <= 9.0 / 16 ? (b < 1.0 / 16 ? 0.5 + 8 * b : (b > 6.0 / 16 ? 1 - (16 / 3.0) * (b - 6.0 / 16) : 1)) : 0;
-			G = (a >= 3.0 / 16 && b >= 3.0 / 16) ? (a < 6.0 / 16 ? (16 / 3.0) * (a - 3.0 / 16) : (b < 6.0 / 16 ? (16 / 3.0) * (b - 3.0 / 16) : 1)) : 0;
-			A = 0.8;
-		}break;
-		}
-		A *= 0xFF, R *= 0xFF, G *= 0xFF, B *= 0xFF;
-		return (ARGB)A * 0x1000000 + (ARGB)R * 0x10000 + (ARGB)G * 0x100 + (ARGB)B;
-	}
 }
 
 #endif
