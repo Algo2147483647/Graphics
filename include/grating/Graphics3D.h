@@ -7,7 +7,6 @@
 #include <functional>
 #include "Graphics2D.h"
 #include "Illumination.h"
-#include "Transform.h"
 
 namespace Graphics {
 

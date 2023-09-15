@@ -10,8 +10,8 @@ using namespace std;
 namespace Graphics {
     inline void RGB2HSV(double r, double g, double b,
                         double& h, double& s, double& v) {
-        double max_val = std::max({ r, g, b });
-        double min_val = std::min({ r, g, b });
+        double max_val = max({ r, g, b });
+        double min_val = min({ r, g, b });
         double diff = max_val - min_val;
 
         // Calculate value
@@ -46,6 +46,9 @@ namespace Graphics {
 
     inline void HSV2RGB(double h, double s, double v,
                         double& r, double& g, double& b) {
+        if (h == 360.0) h = 0.0;
+        s = min(1.0, max(0.0, s));
+        v = min(1.0, max(0.0, v));
 
         if (s == 0.0) {
             r = v;

@@ -3,11 +3,14 @@
 
 #include <Eigen/Dense>
 #include "Color.h"
+#include "Spectrum.h"
 
-typedef Eigen::Matrix<ARGB, Eigen::Dynamic, Eigen::Dynamic> Image;
-typedef Eigen::Matrix<RGB, Eigen::Dynamic, Eigen::Dynamic> Image_RGB;
+namespace Graphics {
+	typedef Eigen::Matrix<ARGB, Eigen::Dynamic, Eigen::Dynamic> Image;
+	typedef Eigen::Matrix<RGB, Eigen::Dynamic, Eigen::Dynamic> Image_RGB;
 
-template <typename Type>
-using Mat = Eigen::Matrix<Type, Eigen::Dynamic, Eigen::Dynamic>;
+	template <typename Type>
+	using Mat = Eigen::Matrix<Type, Eigen::Dynamic, Eigen::Dynamic>;
+}
 
 #endif // !IMAGE_H

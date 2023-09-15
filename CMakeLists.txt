@@ -19,4 +19,4 @@ include_directories(${CMAKE_SOURCE_DIR}/test/RayTracingTest.h)
 
 file(GLOB_RECURSE SOURCES "src/grating/*.cpp")
 
-add_executable (Graphics "test/main.cpp" ${SOURCES} "include/ray_tracing/Ray.h")
+add_executable (Graphics "test/main.cpp" ${SOURCES} "include/ray_tracing/Ray.h" "test/ColorTest.h")

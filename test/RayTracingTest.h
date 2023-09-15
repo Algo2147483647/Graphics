@@ -103,6 +103,6 @@ inline void RayTracingTest() {
 
 	Graphics::ppmWrite("C:/Users/29753/Desktop/outXY.ppm", imgXY);
 	Graphics::ppmWrite("C:/Users/29753/Desktop/outYZ.ppm", imgYZ);
-	Graphics::ppmWrite("C:/Users/29753/Desktop/imgout.ppm", imgout);
+	Graphics::ppmWrite("C:/Users/29753/Desktop/RayTracingTest.ppm", imgout);
 
 }

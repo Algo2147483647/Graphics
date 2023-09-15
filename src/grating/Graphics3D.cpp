@@ -1,6 +1,6 @@
 #include "Graphics3D.h"
 
-inline bool isOut(Image& image, int x0, int y0) {
+inline bool isOut(Graphics::Image& image, int x0, int y0) {
     return x0 < 0 || x0 >= image.cols() || y0 < 0 || y0 >= image.rows();
 }
 
@@ -28,7 +28,7 @@ bool Graphics::drawPoint(Image& image, Mat<int>& Z_buf, int x, int y, int z, dou
     return true;
 }
 
-void Graphics::drawLine (Image& image, Mat<int>& Z_buf, 
+void Graphics::drawLine (Image& image, Mat<int>& Z_buf,
     int sx, int ex, 
     int sy, int ey, 
     int sz, int ez

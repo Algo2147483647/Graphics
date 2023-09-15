@@ -15,35 +15,35 @@ public:
 	RGB(ARGB a) { *this = a; }			//构造函数
 	RGB(INT8U R, INT8U G, INT8U B) : R(R), G(G), B(B) { ; }			//构造函数
 
-	RGB& operator=(const RGB& a) { 
+	inline RGB& operator=(const RGB& a) {
 		R = a.R; 
 		G = a.G; 
 		B = a.B; 
 		return *this; 
 	}
 
-	RGB& operator=(ARGB& a) { 
+	inline RGB& operator=(ARGB& a) {
 		R = a >> 16; 
 		G = a >> 8; 
 		B = a; 
 		return *this; 
 	}
 
-	RGB& operator*=(double a) { 
+	inline RGB& operator*=(double a) {
 		R *= a; 
 		G *= a; 
 		B *= a; 
 		return *this; 
 	}
 
-	RGB& operator+=(RGB a) { 
+	inline RGB& operator+=(RGB a) {
 		R += a.R; 
 		G += a.G; 
 		B += a.B; 
 		return *this; 
 	}
 	
-	INT8U& operator[](int index) {
+	inline INT8U& operator[](int index) {
 		switch (index) {
 		case 0: return R;
 		case 1: return G;
@@ -51,24 +51,23 @@ public:
 		}
 	}
 
-	ARGB to_ARGB() {
-		return ARGB(B) << 0 | 
-			   ARGB(G) << 8 |
-			   ARGB(R) << 16;
+	inline ARGB to_ARGB() {
+		return to_ARGB(R, G, B);
 	}
 
-	ARGB to_ARGB(INT8U R, INT8U G, INT8U B) {
-		return ARGB(B) << 0 | 
+	static ARGB to_ARGB(INT8U R, INT8U G, INT8U B, INT8U A = 0xFF) {
+		return ARGB(B) << 0 |
 			   ARGB(G) << 8 |
-			   ARGB(R) << 16;
+			   ARGB(R) << 16 |
+			   ARGB(A) << 24;
 	}
 
-	ARGB to_ARGB(double A, double R, double G, double B) {
+	static ARGB to_ARGB(double R, double G, double B, double A = 1) {
 		return
-			(ARGB)(B * 0xFF) << 0 +
-			(ARGB)(G * 0xFF) << 0 +
-			(ARGB)(R * 0xFF) << 16 +
-			(ARGB)(A * 0xFF) << 16;
+			(ARGB)(B * 0xFF) << 0 |
+			(ARGB)(G * 0xFF) << 8 |
+			(ARGB)(R * 0xFF) << 16|
+			(ARGB)(A * 0xFF) << 24;
 	}
 
 	static ARGB mul(ARGB a, double r) {

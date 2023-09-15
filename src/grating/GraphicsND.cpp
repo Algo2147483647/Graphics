@@ -22,7 +22,7 @@ bool Graphics::drawPoint(Image& image, vector<Mat<int>>& Z_buf, vector<int>& p)
 
     return true;
 }
-
+/*
 void Graphics::drawPoint(Image& image, vector<double>& p0) {
 	static vector<double> point;
 
@@ -38,10 +38,10 @@ void Graphics::drawPoint(Image& image, vector<double>& p0) {
 		(int)(image.cols / 2 + point[2])
 	);
 }
-
+*/
 /*
  * 画线
- */
+ * /
 
 void Graphics::drawLine (Image& image, vector<Mat<int>>& Z_buf, vector<double>& st, vector<double>& ed)
 {
@@ -110,7 +110,7 @@ void Graphics::drawLine(Image& image, vector<double>& st, vector<double>& ed) {
 *	[流程]:
 		[1] 以二进制顺序遍历所有顶点
 			[2] 连接该点和所有比该点编码多1的点
-----------------------------------------------------------------*/
+----------------------------------------------------------------* /
 void Graphics::drawSuperCuboid(Image& image, vector<double>& pMin, vector<double>& pMax) {
 	unsigned int Dim = pMin.size(), maxCode = (1 << Dim) - 1;
 	vector<double> st, ed;
@@ -137,7 +137,7 @@ void Graphics::drawSuperCuboid(Image& image, vector<double>& pMin, vector<double
 *	[过程]:
 		[1] 计算每一个格点的坐标
 		[2] 绘制该格点对应的, 各维度方向的从min[dim] -> max[dim]的直线段
----------------------------------------------------------------------------*/
+---------------------------------------------------------------------------* /
 void Graphics::drawGrid(Image& image, vector<double>& delta, vector<double>& max, vector<double>& min) {
 	int times = 1, cur;
 	for (int dim = 0; dim < min.size(); dim++) 
@@ -169,4 +169,4 @@ void Graphics::drawGrid(Image& image, vector<double>& delta, vector<double>& max
 			}
 		}
 	}
-}
+}*/

@@ -9,7 +9,7 @@
 ARGB Graphics::PaintColor = 0xFFFFFFFF;
 int  Graphics::PaintSize = 0, Graphics::FontSize = 16;
 
-inline bool isOut(Image& image, int x0, int y0) {
+inline bool isOut(Graphics::Image& image, int x0, int y0) {
 	return x0 < 0 || x0 >= image.cols() || y0 < 0 || y0 >= image.rows();
 }
 

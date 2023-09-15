@@ -2,7 +2,6 @@
 #define GRAPHICS_ND_H
 
 #include "Graphics2D.h"
-#include "Transform.h"
 
 namespace Graphics {
 	bool drawPoint      (Image& image, vector<Mat<int>>& Z_buf, vector<int>& p);

@@ -136,5 +136,5 @@ inline void Graphics2DTest() {
 	}
 
 	// Save .PPM
-	Graphics::ppmWrite("C:/Users/29753/Desktop/out.ppm", img);
+	Graphics::ppmWrite("C:/Users/29753/Desktop/Graphics2DTest.ppm", img);
 }
